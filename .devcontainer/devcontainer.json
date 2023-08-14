@@ -3,7 +3,7 @@
 {
 	"name": "Ubuntu",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	"image": "./Dockerfile",
 	"features": {
 		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0": {}
 	}
@@ -15,7 +15,8 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "uname -a",
+	"postCreateCommand": "cpanm cgi",
+	"postCreateCommand": "cpanm HTML::entities"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
