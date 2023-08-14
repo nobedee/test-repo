@@ -1,0 +1,5 @@
+{
+    "name": "Perl Development",
+    "dockerFile": "Dockerfile",
+    "extensions": ["perl"]
+}
