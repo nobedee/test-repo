@@ -3,5 +3,5 @@ FROM perl:latest
 
 # Install required Perl modules
 RUN cpanm cgi
-Run cpanm HTML::entities
+RUN cpanm HTML::entities
 
