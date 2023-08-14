@@ -1,0 +1,2 @@
+all:
+  echo it worked
