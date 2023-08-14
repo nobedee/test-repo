@@ -5,7 +5,7 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "./Dockerfile",
 	"features": {
-		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0": {}
+		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0"
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -15,8 +15,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cpanm cgi",
-	"postCreateCommand": "cpanm HTML::entities"
+	"postCreateCommand": "cpanm cgi && cpanm HTML::entities",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
