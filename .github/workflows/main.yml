@@ -1,6 +1,11 @@
-- name: install cpanm and one module
-  uses: perl-actions/install-with-cpanm@v1.4
-  with:
-    install: |
-      cgi
-      HTML::Entities
+name: install cpanm and one module
+on: workflow_dispatch
+jobs:
+  intall-cpanm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: perl-actions/install-with-cpanm@stable
+        with:
+          install: |
+           cgi
+           HTML::Entities        
