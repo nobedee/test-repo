@@ -1,0 +1,6 @@
+- name: install cpanm and one module
+  uses: perl-actions/install-with-cpanm@v1.4
+  with:
+    install: |
+      cgi
+      HTML::Entities
