@@ -157,7 +157,7 @@
    <label id="pull-label-html" for="command-pull" data-check="0"  data-source="pull"
     onClick="setSource(this, this.dataset.source)">Pull CHANGE_COMMAND Output</label>    
   </div>
-  <div style="diplay:inline; height: 40px; width:3px; top:15px; margin: 0px 0px 0px 25px; padding: 0px; background:white;"></div>
+  <div style="display:inline; height: 40px; width:3px; top:15px; margin: 0px 0px 0px 25px; padding: 0px; background:white;"></div>
   <ul id="navList">
    <li id="unq">
     <span onclick="
@@ -189,17 +189,19 @@
   </ul>
  </nav> 
  
- <!-- Overview of differne diles by the numbers.-->
- <h1>Different File Statistics</h1><hr>
- <div id="diffStats"></div>
- 
- <!-- Compare run times. -->
- <h1>Source and Pull Run Times</h1><hr>
- <div id="runTimes"></div>
- 
- <!-- Output diff with files with differences  -->
- <h1>Different Files Compared</h1><hr>
- <div id="diffFiles"></div>
+ <div id="dataConversionTestPageContent">
+  <!-- Overview of differne diles by the numbers.-->
+  <h1>Different File Statistics</h1><hr>
+  <div id="diffStats"></div>
+
+  <!-- Compare run times. -->
+  <h1>Source and Pull Run Times</h1><hr>
+  <div id="runTimes"></div>
+
+  <!-- Output diff with files with differences  -->
+  <h1>Different Files Compared</h1><hr>
+  <div id="diffFiles"></div>
+ </div> 
  
  <!-- Link to js tools -->
  <script src="https://cdn.jsdelivr.net/gh/jhauga/general/reusableJavascriptFunctions.js"></script>
@@ -210,6 +212,8 @@
   var navList = document.getElementById("navList");
   var navListATags = navList.getElementsByTagName("a");
 	 var dataCheck = document.querySelectorAll("[data-check]");
+  var theDropDowns = document.querySelectorAll("[data-status]");
+  var dataConversionTestPageContent = document.getElementById("dataConversionTestPageContent");
   var dataNestCheck;
   
   // Change the command name in toggle
@@ -320,8 +324,7 @@
    let curnestedDropdown = cur.nextElementSibling;
    let curData = cur.dataset;   
    let theCurStatus = curStatus;
-   
-   let theDropDowns = document.querySelectorAll("[data-status]");
+      
    let theDropDownsLen = theDropDowns.length;
    // not a nested dropdown
    if (curnestedDropdown.className.indexOf("nestedDropdown") == -1) {
@@ -415,6 +418,15 @@
 	// Set default to repo where forked.
 	setTimeout(setSource, 500);
  
+ // Hide dropdowns when click anywhere.
+ dataConversionTestPageContent.addEventListener("click", function() {  
+   for (let i = 0; i < theDropDowns.length; i++) {
+    let dropStatus = theDropDowns[i].dataset.status;
+    if (dropStatus == 1) {
+     theDropDowns[i].click();
+    }
+   }
+ });
  </script>
  
  <!-- Output files with diff at end -->
