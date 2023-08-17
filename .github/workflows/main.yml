@@ -1,11 +1,38 @@
-name: install cpanm and one module
-on: workflow_dispatch
+name: Setup Codespace Download Defaults
+
+on:
+  repository:
+    types: created
+
 jobs:
-  intall-cpanm:
+  setup-codespace:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: perl-actions/install-with-cpanm@stable
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Codespace
+        uses: actions/create-codespace@v1
         with:
-          install: |
-           cgi
-           HTML::Entities        
+          codespace-config-path: .devcontainer/devcontainer.json
+
+      - name: Run Commands in Codespace
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}  # The same repository
+          path: .github/workflows  # The path to the workflow files
+
+      - name: Install Dependencies and Build
+        run: |
+          # Get the name of the newly created repository
+          repo_name=$(basename "${{ github.repository }}")
+          
+          # Change to the project directory
+          cd "/workspaces/$repo_name"
+
+          # Install default dependencies
+          echo yes | echo sudo | sudo cpan App::cpanminus
+          sudo cpanm CGI
+          # Add execute permission to make tests.
+          sudo chmod a+x Makefile config-variables.sh data-test extract-full-data.sh 
