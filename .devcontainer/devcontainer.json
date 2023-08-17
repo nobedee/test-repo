@@ -1,7 +1,0 @@
-{
-  "name": "Make Codespace",
-  "extensions": ["dbaeumer.vscode-eslint", "ms-vscode.vscode-typescript-tslint-plugin"],
-  "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
-  }
-}
