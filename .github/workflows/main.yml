@@ -7,10 +7,7 @@ jobs:
   setup-codespace:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
+    steps:      
       - name: Run Commands in Codespace
         uses: actions/checkout@v2
         with:
