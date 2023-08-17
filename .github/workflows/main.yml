@@ -13,9 +13,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Create Codespace
-        uses: actions/create-codespace@v1
+        uses: nobedee/test-repo@v1
         with:
           codespace-config-path: .devcontainer/devcontainer.json
+          repository: nobedee/test-repo
 
       - name: Run Commands in Codespace
         uses: actions/checkout@v2
