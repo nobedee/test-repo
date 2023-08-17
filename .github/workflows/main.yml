@@ -1,6 +1,7 @@
 name: Setup Codespace Download Defaults
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
 
 jobs:
   setup-codespace:
@@ -19,14 +20,7 @@ jobs:
       - name: Install Dependencies and Build
         run: |
           # Add execute permission to make tests.
-          sudo chmod a+x Makefile config-variables.sh data-test extract-full-data.sh 
-          
-          # Get the name of the newly created repository
-          repo_name=$(basename "${{ github.repository }}")
-          
-          # Change to the project directory
-          cd "/workspaces/$repo_name"
-
+          sudo chmod a+x Makefile config-variables.sh data-test extract-full-data.sh                               
           # Install default dependencies
           echo yes | echo sudo | sudo cpan App::cpanminus
           sudo cpanm CGI
