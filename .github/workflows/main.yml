@@ -1,8 +1,8 @@
 name: Setup Codespace Download Defaults
 
 on:
-  repository:
-    types: created
+  create:
+    types: repository
 
 jobs:
   setup-codespace:
