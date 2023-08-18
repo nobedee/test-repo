@@ -2,7 +2,7 @@ name: It Worked
 run-name: ${{ github.actor }} ran
 on: [create]
 jobs:
-  Explore-GitHub-Actions:
+  It-Worked:
     runs-on: ubuntu-latest
     steps:
       - run: echo ${{ github.repositroy }}
