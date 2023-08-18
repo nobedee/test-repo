@@ -15,7 +15,7 @@ jobs:
           _curRepo=${{github.repository}}
           _repoName="${_curRepo##*/}"
           echo $_repoName ------------------
-          sed "s/_testResultRepo=\"roffit-pull-diff\"/_testResultRepo=\"$_repoName\"" config-variables.sh
+          sed "s/_testResultRepo=\"roffit-pull-diff\"/_testResultRepo=\"$_repoName\"/" config-variables.sh
       - name: Complete
         run: |
           echo it worked
