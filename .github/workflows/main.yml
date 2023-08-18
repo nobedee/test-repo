@@ -1,6 +1,6 @@
 name: It Worked
 run-name: ${{ github.actor }} ran
-on: [fork]
+on: [create]
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
