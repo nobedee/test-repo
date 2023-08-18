@@ -1,42 +1,22 @@
-name: It worked
-run-name: ${{ github.actor }} ran
+name: Create Action
+run-name: ${{github.actor}} ran
 on: [create]
 jobs:
-  It-Worked-Vanilla:
+  No-Hand-Holding:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ github.repository }}
-      - run: echo it 
-      - name: checkout
-        uses: actions/checkout@v3
-      - run: echo w
-      - name: Pipe
+      - run: echo ran
+      - name: Checkout
+        uses: action/checkout@v3
+      - run: ls -a
+      - name: Complete
         run: |
-          _or=or
-          echo $_or
-          _k=k
-          echo $_k
-      - name: make complete sentence
-        run: |
-          echo e
-          _d=d
-      - name: no pipe
-        run: |
-          echo $_d
-          echo .
+          echo it worked
+          echo abc > abc.txt
+          cat abc.txt
+          sed -i "s/abc/xyz/" abc.txt
+          cat abc.txt
+          echo it worked
       - name: Finish
         run: |
-          echo did it work? Lets check our location.
-          pwd
-      - name: pipe again
-        run: |
-          ls -a
-          echo looks good.
-          ps ax
-          echo looks good.
-          ls -la
-          echo good
-          echo It did work.
-      - name: finish
-        run: |
-          echo next no hand holding run.
+          echo worked. Next real draft.
