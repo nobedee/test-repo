@@ -3,17 +3,17 @@ run-name: ${{ github.actor }} ran
 on: [fork]
 jobs:
   Explore-GitHub-Actions:
-  runs-on: ubuntu-latest
-  steps:
-    - run: echo ${{github.repositroy }}
-    - run: ls -al
-    - run: cat server.js
-    - name: Clone
-    uses: actions/checkout@v3
-    - run: the ${{ github.repository {{ clone }}
-    - run: ls
-    name: List files
-    run: |
-      echo files already listed
-      echo it worked
-      echo job complete
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.repositroy }}
+      - run: ls -al
+      - run: cat server.js
+      - name: Clone
+        uses: actions/checkout@v3
+      - run: the ${{ github.repository {{ clone }}
+      - run: ls
+      - name: List files 
+        run: |
+          echo files already listed
+          echo it worked
+          echo job complete
