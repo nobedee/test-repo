@@ -12,16 +12,15 @@ jobs:
       - run: echo w
       - name: Pipe
         run: |
-          echo $_or
-          # _k=k
-          echo $_k
+          echo or
+          echo k
       - name: make complete sentence
         run: |
           echo e
-          # _d=d
+          echo d
       - name: no pipe
-      - run: echo $_d
       - run: echo .
+      - run: echo Now to finish.
       - name: Finish
       - run: echo did it work? Check files first.
       - name: pipe again
