@@ -1,5 +1,5 @@
 name: It worked
-run-name: ${{ github.actor }}
+run-name: ${{ github.actor }} ran
 on: [create]
 jobs:
   It-Worked-vanilla:
