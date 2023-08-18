@@ -4,8 +4,7 @@ on: [create]
 jobs:
   It-Worked-vanilla:
     runs-on: ubuntu-latest
-    steps:
-      - name: vanilla run
+    steps:      
       - run: ls
       - run: echo it 
       - name: checkout
