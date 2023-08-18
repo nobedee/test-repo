@@ -1,23 +1,19 @@
-name: Setup Codespace Download Defaults
-
-on: 
-  workflow_dispatch:
-
+name: It Worked
+run-name: ${{ github.actor }} ran
+on: [fork]
 jobs:
-  setup-codespace:
-    runs-on: ubuntu-latest
-
-    steps:      
-      - name: Run Commands in Codespace
-        uses: actions/checkout@v2
-        with:
-          repository: ${{ github.repository }}  # The same repository
-          path: .github/workflows  # The path to the workflow files
-
-      - name: Install Dependencies and Build
-        run: |
-          # Add execute permission to make tests.
-          sudo chmod a+x Makefile config-variables.sh data-test extract-full-data.sh                               
-          # Install default dependencies
-          echo yes | echo sudo | sudo cpan App::cpanminus
-          sudo cpanm CGI
+  Explore-GitHub-Actions:
+  runs-on: ubuntu-latest
+  steps:
+    - run: echo ${{github.repositroy }}
+    - run: ls -al
+    - run: cat server.js
+    - name: Clone
+    uses: actions/checkout@v3
+    - run: the ${{ github.repository {{ clone }}
+    - run: ls
+    name: List files
+    run: |
+      echo files already listed
+      echo it worked
+      echo job complete
