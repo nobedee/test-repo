@@ -3,31 +3,33 @@ run-name: ${{ github.actor }}
 on: [create]
 jobs:
   It-Worked-vanilla:
-    - name: vanilla run
-    - run: ls
-    - run: echo it 
-    - name: checkout
-      uses: checkout@v3
-    - run: echo w
-    - run:_or=or
-      run: |
-        echo $_or
-        _k=k
-        echo $_k
-    - name: make complete sentence
-      run: |
-        echo e
-        _d=d
-    - run: echo $_d
-    - run: echo .
-    - name: Finish
-    - run: echo did it work? Check files first.
-      run: |
-        ls -a
-        echo looks good.
-        ps ax
-        echo looks good.
-        ls -la
-        echo good
-        echo It did work.
-    - run: echo next no hand holding run.
+    runs-on: ubuntu-latest
+    steps:
+      - name: vanilla run
+      - run: ls
+      - run: echo it 
+      - name: checkout
+        uses: actions/checkout@v3
+      - run: echo w
+      - run: _or=or
+      - run: |
+          echo $_or
+          _k=k
+          echo $_k
+      - name: make complete sentence
+        run: |
+          echo e
+          _d=d
+      - run: echo $_d
+      - run: echo .
+      - name: Finish
+      - run: echo did it work? Check files first.
+      - run: |
+          ls -a
+          echo looks good.
+          ps ax
+          echo looks good.
+          ls -la
+          echo good
+          echo It did work.
+      - run: echo next no hand holding run.
