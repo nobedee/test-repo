@@ -12,20 +12,22 @@ jobs:
       - run: echo w
       - name: Pipe
         run: |
+          _or=or
           echo $_or
-          # _k=k
+          _k=k
           echo $_k
       - name: make complete sentence
         run: |
           echo e
-          # _d=d
+          _d=d
       - name: no pipe
         run: |
           echo $_d
           echo .
       - name: Finish
         run: |
-          echo did it work? Check files first.
+          echo did it work? Lets check our location.
+          pwd
       - name: pipe again
         run: |
           ls -a
