@@ -9,6 +9,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - run: ls -a
+      - run: echo ${{github.repository}} ----------------
       - name: Complete
         run: |
           echo it worked
