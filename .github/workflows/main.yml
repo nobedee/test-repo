@@ -1,5 +1,4 @@
 name: Create Action
-run-name: ${{github.actor}} ran
 on: [create]
 jobs:
   No-Hand-Holding:
