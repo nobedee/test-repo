@@ -11,7 +11,7 @@ jobs:
       - name: Extract Username and Repository Name and Configure
         run: |
           _fullRepo=${{ github.repository }}
-          _currentUser="${_fullRepo%%*/}"
+          _currentUser="${_fullRepo%%/*}"
           _currentRepo="${_fullRepo##*/}"
           sed -i "s/_testResultRepo=\"roffit-pull-diff\"/_testResultRepo=\"$_currentRepo\"/" config-variables.sh
           sed -i "s/_pullUserName=\"jhauga\"/_pullUserName=\"$_currentUser\"/" config-variables.sh
@@ -22,3 +22,7 @@ jobs:
       - name: Finish Configuration
         run: |
           echo configuration done
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git commit -am "Update template variable"
+          git push origin HEAD
