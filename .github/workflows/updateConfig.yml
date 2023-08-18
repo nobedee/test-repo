@@ -1,9 +1,10 @@
-name: Update Template Variable
+name: Update-Template-Variable
 
 on:
-  repository:
+  workflow_run:
+    workflows: ["Update-Template-Variable"]
     types:
-      - created
+      - completed
 
 jobs:
   update-variable:
