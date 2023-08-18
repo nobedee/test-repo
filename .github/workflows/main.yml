@@ -1,37 +1,19 @@
-name: It worked
+name: It Worked
 run-name: ${{ github.actor }} ran
 on: [create]
 jobs:
-  It-Worked-Vanilla:
+  Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
       - run: echo ${{ github.repository }}
-      - run: echo it 
-      - name: checkout
+      - run: ls -al      
+      - name: Clone
         uses: actions/checkout@v3
-      - run: echo w
-      - name: Pipe
+      - run: cat server.js
+      - run: echo the ${{ github.repository }} clone
+      - run: ls
+      - name: List files 
         run: |
-          echo $_or
-          # _k=k
-          echo $_k
-      - name: make complete sentence
-        run: |
-          echo e
-          # _d=d
-      - name: no pipe
-      - run: echo $_d
-      - run: echo .
-      - name: Finish
-      - run: echo did it work? Check files first.
-      - name: pipe again
-        run: |
-          ls -a
-          echo looks good.
-          ps ax
-          echo looks good.
-          ls -la
-          echo good
-          echo It did work.
-      - name: finish
-      - run: echo next no hand holding run.
+          echo files already listed
+          echo it worked
+          echo job complete
