@@ -7,7 +7,7 @@ jobs:
     steps:
       - run: echo ran
       - name: Checkout
-        uses: action/checkout@v3
+        uses: actions/checkout@v3
       - run: ls -a
       - name: Complete
         run: |
