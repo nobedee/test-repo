@@ -4,22 +4,21 @@ on: [create]
 jobs:
   It-Worked-vanilla:
     runs-on: ubuntu-latest
-    steps:      
+    steps:
       - run: ls
       - run: echo it 
       - name: checkout
         uses: actions/checkout@v3
       - run: echo w
-      - run: _or=or
       - name: Pipe
         run: |
           echo $_or
-          _k=k
+          # _k=k
           echo $_k
       - name: make complete sentence
         run: |
           echo e
-          _d=d
+          # _d=d
       - name: no pipe
       - run: echo $_d
       - run: echo .
