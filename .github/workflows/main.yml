@@ -10,7 +10,7 @@ jobs:
       - run: cat server.js
       - name: Clone
         uses: actions/checkout@v3
-      - run: the ${{ github.repository {{ clone }}
+      - run: the ${{ github.repository }} clone
       - run: ls
       - name: List files 
         run: |
