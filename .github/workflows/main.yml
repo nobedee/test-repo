@@ -7,17 +7,27 @@ jobs:
     steps:
       - run: echo ${{ github.repository }}
       - run: echo it 
-      - name: Clone
+      - name: checkout
         uses: actions/checkout@v3
-      - run: echo w      
-      - run: echo or 
-      - run: echo k
-      - run: echo ed
-      - run: echo .
-      - run: echo Now to finish.
-      - name: Finish      
+      - run: echo w
+      - name: Pipe
+        run: |
+          echo $_or
+          # _k=k
+          echo $_k
+      - name: make complete sentence
+        run: |
+          echo e
+          # _d=d
+      - name: no pipe
+        run: |
+          echo $_d
+          echo .
+      - name: Finish
         run: |
           echo did it work? Check files first.
+      - name: pipe again
+        run: |
           ls -a
           echo looks good.
           ps ax
@@ -25,3 +35,6 @@ jobs:
           ls -la
           echo good
           echo It did work.
+      - name: finish
+        run: |
+          echo next no hand holding run.
