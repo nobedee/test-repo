@@ -1,28 +1,24 @@
-name: Create Action
+name: Configure to New Repo
 on: [create]
 jobs:
-  No-Hand-Holding:
+  Config-To-New-Repository:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ran
-      - name: Checkout
+      - run: echo Configuring to new repository....
+      - name: Rebuild file structure
         uses: actions/checkout@v3
-      - run: ls -a
-      - run: echo ${{github.repository}} ----------------
-      - name: only repo name
+      - run: echo Files rebuilt ready to make initial configurations.
+      - name: Extract Username and Repository Name and Configure
         run: |
-          _curRepo=${{github.repository}}
-          _repoName="${_curRepo##*/}"
-          echo $_repoName ------------------
-          sed "s/_testResultRepo=\"roffit-pull-diff\"/_testResultRepo=\"$_repoName\"/" config-variables.sh
-      - name: Complete
+          _fullRepo=${{ github.repository }}
+          _currentUser="${_fullRepo%%*/}"
+          _currentRepo="${_fullRepo##*/}"
+          sed -i "s/_testResultRepo=\"roffit-pull-diff\"/_testResultRepo=\"$_currentRepo\"/" config-variables.sh
+          sed -i "s/_pullUserName=\"jhauga\"/_pullUserName=\"$_currentUser\"/" config-variables.sh
+          echo $_currentUser > .tempCurrentUser.txt
+      - name: Update README.md with Notice
         run: |
-          echo it worked
-          echo abc > abc.txt
-          cat abc.txt
-          sed -i "s/abc/xyz/" abc.txt
-          cat abc.txt
-          echo it worked
-      - name: Finish
+          sed -E -i "s/(# Template to test pull to data-conversion tool)/# IMPORTANT - BEFORE USING AGREE TO TERMS BY SETTING VALUE OF AGREEMENT VARIABLE TO 1 \n\n\1 /" README.md
+      - name: Finish Configuration
         run: |
-          echo worked. Next real draft.
+          echo configuration done
