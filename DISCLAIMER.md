@@ -1,4 +1,4 @@
-Disclaimer and Acknowledgment of Understanding
+# Disclaimer and Acknowledgment of Understanding
 
 By using the testing tool provided in this GitHub repository, you acknowledge and agree to the following:
 
