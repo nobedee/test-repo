@@ -53,7 +53,8 @@ large amounts of data so be mindful of possible build sizes for test.
  6. Run either:
     - `` make quick ``
     - `` make all ``
- 7. Run a local host and open in browser to view test results.
+ 7. Run server with:
+    - `` node server.js ``
  8. Additionally to clean to reset repo:   
     - `` make clean ``
-    - 
+
