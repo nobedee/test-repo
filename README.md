@@ -22,19 +22,38 @@ large amounts of data so be mindful of possible build sizes for test.
 
 ### View resulte
 1. If final test repo is uploaded to Github:
-  - To see outputs from test [click here](https://jhauga.github.io/htmlpreview.github.com/?https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/index.html).
+   - To see outputs from test [click here](https://jhauga.github.io/htmlpreview.github.com/?https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/index.html).
 2. If final test remains local use method for localhost:
-  - For example - ```php -S localhost:8000```
+   - For example - ```php -S localhost:8000```
 
-### Instructions
+### Local Test Instructions
 
 1. Make repo based on this template repo.
-2. Change variables in "config-variables.sh"
-3. Run either:
-   a. make quick
-   b. make all
-4. Clean, make result repo, or leave test contents:
-   a. Clean:
-      - make clean
-   b. Make result Repo:
-      - make results
+2. Read and agree to terms in USAGE_AGREEMENT.md. Either:
+   - ``` cat USAGE_AGREEMENT.md ```
+   - Click [link to file](https://github.com/jhauga/data-conversion-tool/blob/master/USAGE_AGREEMENT.md)
+3. Change variables in "config-variables.sh".
+4. Ensure necessary dependencies are installed for test.
+5. Run either:
+   - `` make quick ``
+   - `` make all ``
+6. Run a local host and open in browser to view test results.
+7. Additionally to clean to reset repo:   
+   - `` make clean ``
+      
+### Codespace Test Instruction
+ 1. Open the template repo in codespace under "Use this template"
+ 2. Read and agree to terms in USAGE_AGREEMENT.md. Either:
+    - ``` cat USAGE_AGREEMENT.md ```
+    - Click [link to file](https://github.com/jhauga/data-conversion-tool/blob/master/USAGE_AGREEMENT.md)
+ 3. Change variables in "config-variables.sh".
+ 4. Install necessary dependencies
+ 5. Copy paste below line:
+    - ``` chmod a+x Makefile agree config-variables.sh data-test extract-full-data.sh server.js ```
+ 6. Run either:
+    - `` make quick ``
+    - `` make all ``
+ 7. Run a local host and open in browser to view test results.
+ 8. Additionally to clean to reset repo:   
+    - `` make clean ``
+    - 
