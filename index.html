@@ -145,51 +145,51 @@
  </style>
 </head>
 <body>
- <nav>
-  <div class="test-switches">
-   <input checked name="command-used" type="radio" id="command-source">
-   <label id="source-label-html" for="command-source" data-check="1" data-source="source"
-    onClick="setSource(this, this.dataset.source)">Source CHANGE_COMMAND Output</label>
-   
-   <div class="split-mark">|</div>
-   
-   <input name="command-used" type="radio" id="command-pull">
-   <label id="pull-label-html" for="command-pull" data-check="0"  data-source="pull"
-    onClick="setSource(this, this.dataset.source)">Pull CHANGE_COMMAND Output</label>    
-  </div>
-  <div style="display:inline; height: 40px; width:3px; top:15px; margin: 0px 0px 0px 25px; padding: 0px; background:white;"></div>
-  <ul id="navList">
-   <li id="unq">
-    <span onclick="
-     changeNextElementDisplay(this, this.nextElementSibling);
-     resetDropDowns(this, this.dataset.status);" data-status="0">Unique</span>
-    <div class="dropdown" style="display:none">
-    <!-- Options used in test -->
-    
-    </div>
-   </li>
-   <li id="err">
-    <span onclick="
-     changeNextElementDisplay(this, this.nextElementSibling);
-     resetDropDowns(this, this.dataset.status);" data-status="0">Differences</span>
-    <div class="dropdown" style="display:none">
-    <!-- Options used in test -->
-    
-    </div>
-   </li>
-   <li id="gen">
-    <span onclick="
-     changeNextElementDisplay(this, this.nextElementSibling);
-     resetDropDowns(this, this.dataset.status);" data-status="0">General</span>
-    <div class="dropdown" style="display:none">
-    <!-- Options used in test -->
-    
-    </div>
-   </li>   
-  </ul>
- </nav> 
+  <nav>
+   <div class="test-switches">
+    <input checked name="command-used" type="radio" id="command-source">
+    <label id="source-label-html" for="command-source" data-check="1" data-source="source"
+     onClick="setSource(this, this.dataset.source)">Source CHANGE_COMMAND Output</label>
+
+    <div class="split-mark">|</div>
+
+    <input name="command-used" type="radio" id="command-pull">
+    <label id="pull-label-html" for="command-pull" data-check="0"  data-source="pull"
+     onClick="setSource(this, this.dataset.source)">Pull CHANGE_COMMAND Output</label>    
+   </div>
+   <div style="display:inline; height: 40px; width:3px; top:15px; margin: 0px 0px 0px 25px; padding: 0px; background:white;"></div>
+   <ul id="navList">
+    <li id="unq">
+     <span onclick="
+      changeNextElementDisplay(this, this.nextElementSibling);
+      resetDropDowns(this, this.dataset.status);" data-status="0">Unique</span>
+     <div class="dropdown" style="display:none">
+     <!-- Options used in test -->
+
+     </div>
+    </li>
+    <li id="err">
+     <span onclick="
+      changeNextElementDisplay(this, this.nextElementSibling);
+      resetDropDowns(this, this.dataset.status);" data-status="0">Differences</span>
+     <div class="dropdown" style="display:none">
+     <!-- Options used in test -->
+
+     </div>
+    </li>
+    <li id="gen">
+     <span onclick="
+      changeNextElementDisplay(this, this.nextElementSibling);
+      resetDropDowns(this, this.dataset.status);" data-status="0">General</span>
+     <div class="dropdown" style="display:none">
+     <!-- Options used in test -->
+
+     </div>
+    </li>   
+   </ul>
+  </nav> 
  
- <div id="dataConversionTestPageContent">
+  <div id="dataConversionTestPageContent">
   <!-- Overview of differne diles by the numbers.-->
   <h1>Different File Statistics</h1><hr>
   <div id="diffStats"></div>
@@ -211,7 +211,7 @@
   // Global elements.
   var navList = document.getElementById("navList");
   var navListATags = navList.getElementsByTagName("a");
-	 var dataCheck = document.querySelectorAll("[data-check]");
+  var dataCheck = document.querySelectorAll("[data-check]");
   var theDropDowns = document.querySelectorAll("[data-status]");
   var dataConversionTestPageContent = document.getElementById("dataConversionTestPageContent");
   var dataNestCheck;
@@ -255,10 +255,10 @@
    }
   };
   
-	 var sourceIsSet = 0;
+	var sourceIsSet = 0;
   // Set source repo to selected repo for pages in dropdown.
-  function setSource(cur, rofSource) {
-	  if (rofSource == undefined) rofSource = "source";
+  function setSource(cur, refSource) {
+	 if (refSource == undefined) { refSource = "source"; }
    let navListATagsLen = navListATags.length; let curHref;
    if (cur != undefined) {
     let checkStatus = cur.dataset.check;    
@@ -277,12 +277,12 @@
    for (let i = 0; i < navListATagsLen; i++) {
     curHref = navListATags[i].href;
     if (sourceIsSet == 0) {
-       navListATags[i].href = curHref.replace("ROFFIT_USED", rofSource);
+     navListATags[i].href = curHref.replace("COMMAND_USED", refSource);
     } else {
-     if (rofSource == "pull") {
-      navListATags[i].href = curHref.replace("source", rofSource);
+     if (refSource == "pull") {
+      navListATags[i].href = curHref.replace("source", refSource);
      } else {
-      navListATags[i].href = curHref.replace("pull", rofSource);
+      navListATags[i].href = curHref.replace("pull", refSource);
      }
     }
    }
@@ -393,7 +393,8 @@
        curNestedDropdown.innerHTML = "<ul>";
        for (ii = 0; ii < nestDropArr[i].length; ii++) {
         curNestedDropdown.innerHTML += "<li><a target='_blank' href='" +
-         nestDropArr[i][ii] + "'>" +
+         nestDropArr[i][ii].replace("COMMAND_USED", "source") + "'>" +
+          //nestDropArr[i][ii] + "'>" +
          nestDropArr[i][ii].substring(nestDropArr[i][ii].lastIndexOf("/")+1, nestDropArr[i][ii].indexOf("-")) +
          "</a></li><br>";
        }
@@ -408,25 +409,21 @@
    iMakeLinks();
   }
   
- // Set html links in dropdown by test by created.
- setTimeout(function() {
-  makeLinks("unq"); 
-  makeLinks("err"); 
-  makeLinks("gen"); 
- }, 400);
+  // Set html links in dropdown by test by created.
+  setTimeout(function() {makeLinks("unq");}, 400);
+	setTimeout(function() {makeLinks("err");}, 450);
+  setTimeout(function() {makeLinks("gen");}, 500);
+  setTimeout(setSource(), 600);
  
-	// Set default to repo where forked.
-	setTimeout(setSource, 500);
- 
- // Hide dropdowns when click anywhere.
- dataConversionTestPageContent.addEventListener("click", function() {  
+  // Hide dropdowns when click anywhere.
+  dataConversionTestPageContent.addEventListener("click", function() {  
    for (let i = 0; i < theDropDowns.length; i++) {
     let dropStatus = theDropDowns[i].dataset.status;
     if (dropStatus == 1) {
      theDropDowns[i].click();
     }
    }
- });
+  });
  </script>
  
  <!-- Output files with diff at end -->
@@ -439,14 +436,14 @@
    let errList = this.responseText;
    let testreg = /tests/g;
    let htmlreg = /html/g;
-   let roffreg = /ROFFIT_USED-/g;
+   let commandreg = /COMMAND_USED/g;
    let htmlltreg = /</g;
    let htmlgtreg = />/g;
    let openh3reg = /&lt;h3&gt;/g; let closeh3reg = /&lt;\/h3&gt;/g;
    let linebrreg = /&lt;br&gt;&lt;hr&gt;&lt;br&gt;/g;
    let errListTxt = errList.replace(testreg, "diff");
    errListTxt = errListTxt.replace(htmlreg, "txt");
-   errListTxt = errListTxt.replace(roffreg, "");
+   errListTxt = errListTxt.replace(commandreg, "");
    errListTxt = errListTxt.replace(htmlltreg, "&lt;");
    errListTxt = errListTxt.replace(htmlgtreg, "&gt;");
    errListTxt = errListTxt.replace(openh3reg, "<h3>");
@@ -491,6 +488,32 @@
                  "that is higlighted in the menu. Pages will open in\n" +
                  "a new tab in browser.";
  setTimeout(function() {alert(alertText);}, 1000);
+ </script>
+ 
+ <!-- debugging - for use to test link building -->
+ <script>
+  var testlinks = 1; // 1 is on
+  var linkCount = 0;
+	setTimeout(function() {
+   if (testlinks == 1) {
+    let testarr = [];
+    for (let i = 0; i < navListATags.length; i++) {
+     testarr.push(navListATags[i].href);		
+    }
+    
+    for (i = 0; i < testarr.length; i++) {
+     if (testarr[i].indexOf("COMMAND_USED") > -1) {
+      console.log("links failed");
+      break;
+     } else {
+      //console.log(linkCount + " links passed " + testarr[i]);
+      console.log("links passed");
+      linkCount++;     
+     }
+    }
+   }
+   console.log(linkCount);
+	}, 2000);
  </script>
 </body>
 </html>

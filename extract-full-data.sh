@@ -10,15 +10,17 @@
 ### license specified in that reposityor.              ###
 ##########################################################
 
+# Set variables from config-variables.sh. 
+# IMPORTANT - these should have been changed after making repo from template.
+# IMPORTANT - you must agree to terms before use.
+source config-variables.sh
+check_if_user_agreed_exit_if_not # check if agreed to terms, exit if not
+
 # Make temp extract location.
 mkdir -p data/extract data/full-test
 
-# Configuration - file extension to match and move to data folder.
-source config-variables.sh
-#declare -a _fileExtensions=('.1' '.3' '.8' '.1.in')
 
 # Configure user(s) and repositories to clone and build ful test from.
-#declare -a _fullTestRepos=('MidnightCommander' 'mc' 'libreswan' 'libreswan' 'nmap' 'nmap' 'libssh2' 'libssh2' 'LogtalkDotOrg' 'logtalk3' 'curl' 'curl')
 
 # Directory where repos will be cloned, extracted, then deleted.
 _startingDir="data/extract" # clone and extract here

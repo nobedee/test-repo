@@ -1,10 +1,9 @@
 #!/bin/bash
-# roffit-test
-# Test roffit pull request file to ensure no new problems arise.
-# This will be the base for a template repopsitory "data-conversion-test"
+# data-test
+# Test data conversion tool pull request file to ensure no new problems arise, and/or build is not slow or significantly slow down.
 
 ##########################################################
-##################### ROFFIT-TEST ########################
+##################### DATA-TEST ########################
 ### All files in this repositroy are public domain cc0 ###
 ### Any files created by the test are subject to the   ###
 ### license specified in that reposityor.              ###
@@ -12,7 +11,9 @@
 
 # Set variables from config-variables.sh. 
 # IMPORTANT - these should have been changed after making repo from template.
+# IMPORTANT - you must agree to terms before use.
 source config-variables.sh
+check_if_user_agreed_exit_if_not # check if agreed to terms, exit if not
 _file="source" # DO NOT CHANGE - sets file name for test pages
 
 # The number of opttions that will run when testing.
@@ -42,12 +43,12 @@ ls -p1 data/"$_currentTest"/unq/ | grep -v '/$' > list-unq.txt
 mkdir -p diff commands support tests
 mkdir -p diff/unq diff/err diff/gen tests/unq tests/err tests/gen
 
-# Get source and pulled roffit file from github.
+# Get source and pulled command file from github.
 function _git_clone_repo() {
 	_curGitHubUser="$1"
 	git clone https://github.com/$_curGitHubUser/$_COMMAND_TEST.git commands/"$_curGitHubUser"-"$_COMMAND_TEST"/	
 }
-# Make the dir to compare roffit.
+# Make the dir to compare source and pull command.
 _git_clone_repo "$_sourceUserName" && _git_clone_repo "$_pullUserName"
 
 # Define timing arrays.
@@ -180,7 +181,7 @@ run_test "list-gen.txt" "gen" && run_test "list-unq.txt" "unq"
 # Make support files for html links.
 ls -1 tests/unq/*-source* > support/menu-unq-links.txt && ls -1 tests/err/*-source* > support/menu-err-links.txt && ls -1 tests/gen/*-source* > support/menu-gen-links.txt
 # Replace the temporary filler text to fit test outputs.
-sed -i "s/source/ROFFIT_USED/g" support/menu-unq-links.txt && sed -i "s/source/ROFFIT_USED/g" support/menu-err-links.txt && sed -i "s/source/ROFFIT_USED/g" support/menu-gen-links.txt
+sed -i "s/source/COMMAND_USED/g" support/menu-unq-links.txt && sed -i "s/source/COMMAND_USED/g" support/menu-err-links.txt && sed -i "s/source/COMMAND_USED/g" support/menu-gen-links.txt
 
 # Create a text file with contents of all diff files. 
 ls -p1 diff/err/* | grep -v '/$' > diff/errList.txt && touch diff/errs.txt

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo Do you agree to the terms specified in USAGE_AGREEMENT.md
+echo 
+echo YES or NO
+read _doesUserAgree
+
+if [ "$_doesUserAgree" = "YES" ]; then
+	sed -i "s/_acknowledgeAndAgreeToUSAGE_AGREEMENT=0/_acknowledgeAndAgreeToUSAGE_AGREEMENT=1/" config-variables.sh
+else
+	echo You have not agreed. Press enter exit.
+	read _waitOne
+	exit
+fi
+

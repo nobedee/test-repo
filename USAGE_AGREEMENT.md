@@ -1,6 +1,6 @@
 # Disclaimer and Acknowledgment of Understanding
 
-By proceeding to use the testing tool provided in this repository ("test-repo"), you affirm that you meet the following criteria 
+By proceeding to use the testing tool provided in this repository ("data-conversion-test"), you affirm that you meet the following criteria 
 for both local tests and/or GitHub Codespace tests, and you understand and accept the associated requirements:
 
 ## CRITERIA FOR LOCAL and/or GITHUB CODESPACE TESTS ACKNOWLEDGMENT:
@@ -58,5 +58,7 @@ If you do not agree with or understand any part of these criteria, refrain from 
 By using this testing tool, you acknowledge that you have read and understood this disclaimer 
 and acknowledgment of understanding, meet specified criteria(s), and understand and accept the 
 associated requirements. If you do not agree with these terms, do not use the tool.
+
+The complete and unaltered usage agreement specified can be found at [data-conversion-tool]("https://github.com/jhauga/data-conversion-tool/blob/master/USAGE_AGREEMENT.md").
 
 Last Updated - August, 18th 2023
