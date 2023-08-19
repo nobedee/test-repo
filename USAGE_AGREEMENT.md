@@ -59,6 +59,6 @@ By using this testing tool, you acknowledge that you have read and understood th
 and acknowledgment of understanding, meet specified criteria(s), and understand and accept the 
 associated requirements. If you do not agree with these terms, do not use the tool.
 
-The complete and unaltered usage agreement specified can be found at [data-conversion-tool]("https://github.com/jhauga/data-conversion-tool/blob/master/USAGE_AGREEMENT.md").
+The complete and unaltered usage agreement specified can be found at [data-conversion-tool](https://github.com/jhauga/data-conversion-tool/blob/master/USAGE_AGREEMENT.md).
 
 Last Updated - August, 18th 2023
