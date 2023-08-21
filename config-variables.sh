@@ -10,7 +10,7 @@
 # ---------------------------------------------------
 #
 # Set to 1 to agree; 0 to disagree.
-_acknowledgeAndAgreeToUSAGE_AGREEMENT=1
+_acknowledgeAndAgreeToUSAGE_AGREEMENT=0
 
 # INSTRUCTIONS:
 #  1. Define the new repo name in variable.
