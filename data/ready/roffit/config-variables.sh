@@ -1,7 +1,7 @@
 #!/bin/bash
 # config-variables.sh
 # Change the variables, and arrays to meet your test.
-
+_readied=0
 # Source config functions.
 source config/checkIfUserAgreedExitIfNot.sh
 source config/specifyPathToCommand.sh
@@ -28,40 +28,40 @@ _acknowledgeAndAgreeToUSAGE_AGREEMENT=0
 #     - If needed edit data-test file.  104 an 107.
 
 # I. DEFINE NEW REPO
-# Name of new repository for tests result. 
-_testResultRepo="command-test" 
+# Name of new repository for tests result. CHANGE if needed.
+_testResultRepo="repo-name-test" 
 
 # II. CHANGE CONFIG VARIABLES
-_COMMAND_TEST="command"  # command ------ the command/script that will run
-_sourceUserName="source" # source ------- user that the repo was forked from
-_pullUserName="pull"     # pull --------- user with fork and making pull request
-_repoName="command-repo" # command-repo - the repo where command is stored for clone
+_COMMAND_TEST="roffit"   # roffit ----- the command/script that will run
+_sourceUserName="bagder" # bagder ----- user that the repo was forked from
+_pullUserName="pull"     # pull ------- user with fork and making pull request
+_repoName="repo-name"    # repo-name -- the repo where command is stored for clone
 _useSource=1             # use source - Start off using source user's command
 _cloneRepo=1             # clone repo - 1 to clone from github, 0 to use local
                            # IMPORTANT - if 0 then place files in directory 
 						   #             "commands/$_sourceUserName-$)COMMAND_TEST" &
 						   #             "commands/$_pullUserName-$)COMMAND_TEST" manually.
-
+						   
 # III. DEFINE OPTIONS USED
 # Define options that will be used with command to test builds.
 # By default the command will be run with no options.
 # Remove "" from array to unset 'run with no option default'.
-declare -a _optionsToRun=("")
+declare -a _optionsToRun=("" "--bare")
 
 # IV. DECLARE SOURCE FILE EXTENSIONS
 # Configuration - file extension to match and move to data folder.
-declare -a _fileExtensions=('.ext1' '.ext2' '.ext3')
+declare -a _fileExtensions=('.1' '.3' '.8' '.1.in')
 
 # V. CHANGE FILE EXTENSION FOR TARGET FILE
 _targetFileExtension=".html"
 
 # VI. DECALREE ADDITIONAL REPOS TO TEST TOOL
 # Configure user(s) and repositories to clone and build ful test from.
-declare -a _fullTestRepos=('userA' 'repoA' 'userB' 'repoB' 'userC' 'repoC')
+declare -a _fullTestRepos=('nmap' 'nmap' 'libssh2' 'libssh2' 'curl' 'curl')
 
 # VII. CHANGE UNIQUE REPO
 # Specify unique user repo to make separate foler.
-_unqUser="userC"
+_unqUser="curl"
 
 # VIII. CHANGE COMMAND SYNTAX
 # IMPORTANT - DO NOT CHANGE ELEMENTS - ONLY HOW IT WILL BE CALLED IN COMMAND LINE
@@ -76,7 +76,7 @@ _commandSyntax() {
   
   _opt="$1" && _inputFile="$2" && _outputFile="$3"
   ./$_COMMAND_TEST "$_opt" < "$_inputFile" > "$_outputFile"
-
+      
   # EXAMPLE:
   # command opts inputfile > output file
   
@@ -93,12 +93,14 @@ _commandSyntax() {
 
 
 # Condition to check if using GitHub ot local files.
-if [ $_cloneRepo = 0 ]; then
-  touch .localCommandUsed  
-  _specifyPathToCommand
-else
-  rm .localCommandUsed nul 2>nul
-  if [ -e commands ]; then
-    rm -rf commands
+if [ ! $_readied ]; then
+  if [ $_cloneRepo = 0 ]; then
+    touch .localCommandUsed
+    _specifyPathToCommand
+  else
+    rm .localCommandUsed nul 2>nul
+    if [ -e commands ]; then
+      rm -rf commands
+    fi
   fi
 fi

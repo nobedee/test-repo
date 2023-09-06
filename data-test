@@ -46,10 +46,12 @@ mkdir -p diff/unq diff/err diff/gen tests/unq tests/err tests/gen
 # Get source and pulled command file from github.
 function _git_clone_repo() {
 	_curGitHubUser="$1"
-	git clone https://github.com/$_curGitHubUser/$_COMMAND_TEST.git commands/"$_curGitHubUser"-"$_COMMAND_TEST"/	
+	git clone https://github.com/$_curGitHubUser/$_repoName.git commands/"$_curGitHubUser"-"$_COMMAND_TEST"/
 }
 # Make the dir to compare source and pull command.
-_git_clone_repo "$_sourceUserName" && _git_clone_repo "$_pullUserName"
+if [ "$_cloneRepo" = "1" ]; then
+	_git_clone_repo "$_sourceUserName" && _git_clone_repo "$_pullUserName"
+fi
 
 # Define timing arrays.
 declare -a _runTimes && declare -a _sourceRuns && declare -a _pullRuns
@@ -93,12 +95,20 @@ function run_test() {
 	# repetitive function to make files
 	run_command() {
 		# loop through options specified to run command with
-		for opts in "${_optionsToRun[@]}"; do
-			# start start time, run build command, and calculate run time storing it in array
+		for opts in "${_optionsToRun[@]}"; do			
 			if [ "$opts" == "" ]; then
-				calc_build "1" && ./"$_COMMAND_TEST" "$opts" < data/"$_curDir"/"$line" > tests/"$_curData"/"$line"-"$1"-default.html && calc_build "2"
+				_nameOpt="-default"
 			else
-				calc_build "1" && ./"$_COMMAND_TEST" "$opts" < data/"$_curDir"/"$line" > tests/"$_curData"/"$line"-"$1""$opts".html && calc_build "2"
+				_nameOpt="$opts"
+			fi
+			if [ "$_targetFileExtension" == ".html" ]; then
+				# start start time, run build command, and calculate run time storing it in array
+				calc_build "1" && _commandSyntax "$opts" data/"$_curDir"/"$line" tests/"$_curData"/"$line"-"$1""$_nameOpt".html && calc_build "2"
+			else
+				echo "<!DOCTYPE HTML><html><body><pre>" > tests/"$_curData"/"$line"-"$1""$_nameOpt".html # make html opening elements
+				# start start time, run build command, and calculate run time storing it in array
+				calc_build "1" && _commandSyntax "$opts" data/"$_curDir"/"$line" tests/"$_curData"/"$line"-"$1""$_nameOpt".html && calc_build "2"
+				echo "</pre></body></html>" >> tests/"$_curData"/"$line"-"$1""$_nameOpt".html # make html closing elements
 			fi
 			# increase the number of files built
 			(( _numberOfFilesBuilt++ ))
@@ -108,7 +118,7 @@ function run_test() {
 		for opts in "${_optionsToRun[@]}"; do
 			if [ "$opts" = "" ]; then
 					opts="-default"
-			fi		
+			fi
 			if [ "$1" = "source" ]; then
 				# condition that creates comparable files depending on whichever command
 				# is used first
@@ -309,6 +319,9 @@ echo "${_COMMAND_TEST^}" > support/COMMAND-USED.txt
 sed -i "s/CHANGE_USER/$_pullUserName/" README.md
 sed -i "s/CHANGE_REPO/$_testResultRepo/" README.md
 
+# Change  user and repo in index.html
+sed -i "s|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|var cur_test_results = \"https://github.com/$_pullUserName/$_testResultRepo/blob/main/\";|" index.html
+
 # remove option call signs
 sed -i -E 's/([-]+)(.*)/\2/g' support/options-ran.txt
 
@@ -316,4 +329,6 @@ sed -i -E 's/([-]+)(.*)/\2/g' support/options-ran.txt
 rm list-gen.txt list-unq.txt
 
 # Remove command as no longer needed.
-rm -rf commands "$_COMMAND_TEST"
+if [ ! -e .localCommandUsed ]; then
+	rm -rf commands "$_COMMAND_TEST"
+fi

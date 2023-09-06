@@ -19,14 +19,8 @@ check_if_user_agreed_exit_if_not # check if agreed to terms, exit if not
 # Make temp extract location.
 mkdir -p data/extract data/full-test
 
-
-# Configure user(s) and repositories to clone and build ful test from.
-
 # Directory where repos will be cloned, extracted, then deleted.
 _startingDir="data/extract" # clone and extract here
-
-# Specify unique user repo to make separate foler.
-_unqUser="curl"
 
 # Function to process directories recursively
 process_directory() {

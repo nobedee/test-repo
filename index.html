@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
  <meta charset="UTF-8">
- <title>Data Conversion Tool - Pre Pull Test</title>
+ <title>Data Conversion Tool</title>
  <style>
   * {
    box-sizing: border-box;
@@ -128,6 +128,9 @@
   span.pageDrop[data-nest-check^="0"] + div.dropdown.nestedDropdown {
    display: none;
   }
+  div.dropdown.nestedDropdown.indicateSwitch {
+   margin-top: 10px;
+  }
   span.pageDrop + div.dropdown.nestedDropdown ul li:hover {
    background: lightgray;
   }
@@ -155,7 +158,7 @@
 
     <input name="command-used" type="radio" id="command-pull">
     <label id="pull-label-html" for="command-pull" data-check="0"  data-source="pull"
-     onClick="setSource(this, this.dataset.source)">Pull CHANGE_COMMAND Output</label>    
+     onClick="setSource(this, this.dataset.source)">Pull CHANGE_COMMAND Output</label>
    </div>
    <div style="display:inline; height: 40px; width:3px; top:15px; margin: 0px 0px 0px 25px; padding: 0px; background:white;"></div>
    <ul id="navList">
@@ -203,16 +206,32 @@
   <div id="diffFiles"></div>
  </div> 
  
+ <script id="removedIfOnGitHub" src="https://cdn.jsdelivr.net/gh/jhauga/general/reusableJavascriptFunctions.js"></script>
  <!-- Link to js tools -->
- <script src="https://cdn.jsdelivr.net/gh/jhauga/general/reusableJavascriptFunctions.js"></script>
+ <script defer>
+  setTimeout(
+   function() {
+    if (location.href.indexOf("github.com") > -1) {
+     let removedIfOnGitHub = document.getElementById("removedIfOnGitHub");
+     removedIfOnGitHub.remove();
+     let linkcdn = document.createElement("script");
+     linkcdn.src = "https://cdn.jsdelivr.net/gh/jhauga/general/reusableJavascriptFunctions.js";
+     document.body.appendChild(linkcdn);    
+    }
+   }, 1000);	 
+ </script>
  
  <!-- Page menu and repo scripts -->
  <script>
+  // Changed with make tool
+  var cur_test_results = "https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/";
+  
   // Global elements.
   var navList = document.getElementById("navList");
   var navListATags = navList.getElementsByTagName("a");
   var dataCheck = document.querySelectorAll("[data-check]");
-  var theDropDowns = document.querySelectorAll("[data-status]");
+  var theDropDowns = document.querySelectorAll("[data-status]");  
+  var globalNestedDropdown = document.getElementsByClassName("nestedDropdown");
   var dataConversionTestPageContent = document.getElementById("dataConversionTestPageContent");
   var dataNestCheck;
   
@@ -254,39 +273,54 @@
     }
    }
   };
-  
-	var sourceIsSet = 0;
-  // Set source repo to selected repo for pages in dropdown.
-  function setSource(cur, refSource) {
-	 if (refSource == undefined) { refSource = "source"; }
-   let navListATagsLen = navListATags.length; let curHref;
-   if (cur != undefined) {
-    let checkStatus = cur.dataset.check;    
-    if (cur.nextElementSibling == null) { toggleDataCheck(0); }
-    else { toggleDataCheck(1); }
-    
-    if (checkStatus == "0") { 
-     cur.dataset.check = "1"; 
-     cur.previousElementSibling.setAttribute("checked", true);
-    } 
-     else { 
-      cur.dataset.check = "0";
-      cur.previousElementSibling.setAttribute("checked", true);
-     }
-   }
-   for (let i = 0; i < navListATagsLen; i++) {
-    curHref = navListATags[i].href;
-    if (sourceIsSet == 0) {
-     navListATags[i].href = curHref.replace("COMMAND_USED", refSource);
-    } else {
-     if (refSource == "pull") {
-      navListATags[i].href = curHref.replace("source", refSource);
+  // Subtle repo switch indicator.
+  var indicateSwitch = function() {
+   let ind = 0;
+   var runInd = function() {
+    for (let i = 0; i < globalNestedDropdown.length; i++) {
+     let indClass = globalNestedDropdown[i].className;
+     if (ind == 0 ) {
+      globalNestedDropdown[i].className += " indicateSwitch"; // stylel with css
      } else {
-      navListATags[i].href = curHref.replace("pull", refSource);
+      globalNestedDropdown[i].className = indClass.replace(" indicateSwitch", "");
      }
     }
-   }
-	 sourceIsSet = 1;
+   };
+   runInd(); ind = 1; setTimeout(runInd, 500);
+  };
+	 var sourceIsSet = 0;
+  // Set source repo to selected repo for pages in dropdown.
+  function setSource(cur, refSource) {
+   if (refSource == undefined) { refSource = "source"; }
+    let navListATagsLen = navListATags.length; let curHref;
+    if (cur != undefined) {
+     let checkStatus = cur.dataset.check;
+     if (cur.nextElementSibling == null) { toggleDataCheck(0); }
+     else { toggleDataCheck(1); }
+
+     if (checkStatus == "0") { 
+      cur.dataset.check = "1"; 
+      cur.previousElementSibling.setAttribute("checked", true);
+     } 
+      else { 
+       cur.dataset.check = "0";
+       cur.previousElementSibling.setAttribute("checked", true);
+      }
+    }
+    for (let i = 0; i < navListATagsLen; i++) {
+     curHref = navListATags[i].href;
+     if (sourceIsSet == 0) {
+      navListATags[i].href = curHref.replace("COMMAND_USED", refSource);
+     } else {
+      if (refSource == "pull") {
+       navListATags[i].href = curHref.replace("source", refSource);
+      } else {
+       navListATags[i].href = curHref.replace("pull", refSource);
+      }
+     }
+    }
+   if (sourceIsSet == 1) { indicateSwitch(); }
+   sourceIsSet = 1;
   }
 	 
   // Make dropdowns by command options.
@@ -392,11 +426,18 @@
        let curNestedDropdown = nestedDropdown[i];
        curNestedDropdown.innerHTML = "<ul>";
        for (ii = 0; ii < nestDropArr[i].length; ii++) {
-        curNestedDropdown.innerHTML += "<li><a target='_blank' href='" +
-         nestDropArr[i][ii].replace("COMMAND_USED", "source") + "'>" +
-          //nestDropArr[i][ii] + "'>" +
-         nestDropArr[i][ii].substring(nestDropArr[i][ii].lastIndexOf("/")+1, nestDropArr[i][ii].indexOf("-")) +
-         "</a></li><br>";
+	       if (location.href.indexOf("https://jhauga.github.io/htmlpreview.github.com/?") > -1) {
+         curNestedDropdown.innerHTML += "<li><a target='_blank' href='" +
+	         "https://jhauga.github.io/htmlpreview.github.com/?" + cur_test_results +
+          nestDropArr[i][ii].replace("COMMAND_USED", "source") + "'>" +          
+          nestDropArr[i][ii].substring(nestDropArr[i][ii].lastIndexOf("/")+1, nestDropArr[i][ii].indexOf("-")) +
+          "</a></li><br>";
+	        } else {
+         curNestedDropdown.innerHTML += "<li><a target='_blank' href='" +
+          nestDropArr[i][ii].replace("COMMAND_USED", "source") + "'>" +          
+          nestDropArr[i][ii].substring(nestDropArr[i][ii].lastIndexOf("/")+1, nestDropArr[i][ii].indexOf("-")) +
+          "</a></li><br>";
+    	   }
        }
        curNestedDropdown.innerHTML += "</ul>";
        i++;
@@ -411,7 +452,7 @@
   
   // Set html links in dropdown by test by created.
   setTimeout(function() {makeLinks("unq");}, 400);
-	setTimeout(function() {makeLinks("err");}, 450);
+	 setTimeout(function() {makeLinks("err");}, 450);
   setTimeout(function() {makeLinks("gen");}, 500);
   setTimeout(setSource(), 600);
  
@@ -515,5 +556,6 @@
    console.log(linkCount);
 	}, 2000);
  </script>
+
 </body>
 </html>
