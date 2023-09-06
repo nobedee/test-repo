@@ -4,16 +4,23 @@
 ### Any files created by the test are subject to the   ###
 ### license specified in that reposityor.              ###
 ##########################################################
+.PHONY: check-mac
 
-all:
+check-mac:
+	@if [ -e MAC-ME ]; then \
+		./MAC-ME; \
+		mv MAC-ME .MAC-ME; \
+	fi
+
+all: check-mac
 	@./extract-full-data.sh
 	@./data-test 1
 
-quick:
+quick: check-mac
 	@./data-test
 	
 # Ready made test. See "Ready Made Tests" in README.md
-roffit: ask.clone
+roffit: ask.clone check-mac
 	@if [ ! -d "reset" ]; then \
 		mkdir reset; \
 		cp -f config-variables.sh reset/config-variables.sh; \
