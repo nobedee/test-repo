@@ -4,6 +4,6 @@ if command -v sw_vers >/dev/null 2>&1; then
   sed -i '' "s|sed -i|sed -i ''|g" *.sh config/*.sh data/ready/*.sh data/ready/*/*.sh
   sed -i '' "s|sed -i|sed -i ''|g" data-test Makefile agree
   sed -i '' "s|\"\$(date +%s.%N)\"|\"\$(python -c 'import time; print(\"%.9f\" % time.time())')\"|g" data-test
-  sed -i '' "s|echo \"\${_COMMAND_TEST\^}\"|echo \"\${_COMMAND_TEST}\" \| awk '{print toupper(substr(\$0, 1, 1)) substr(\$0, 2)}')|g" data-test
+  sed -i '' "s|echo \"\${_COMMAND_TEST\^}\"|echo \"\${_COMMAND_TEST}\" \| awk '{print toupper(substr(\$0, 1, 1)) substr(\$0, 2)}'|g" data-test
 fi
 
