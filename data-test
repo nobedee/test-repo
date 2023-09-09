@@ -171,6 +171,9 @@ function run_test() {
 	# make html files by command being used using repetitive functions above
 	# file naming will be [file_name]-[source|pull]-[""|"${opt[x]}"].html
 	while read -r line; do
+		if [ $_breakOutOfTest = 1 ]; then
+			break
+		fi		
 		# increase count of files that were tested (files in data/[full|quick]-test folder(s)
 		(( _numberOfFilesTested++ ))
 		if [ "$_useSource" = 1 ]; then
@@ -180,9 +183,9 @@ function run_test() {
 			# run using pull command
 			run_command "pull"
 		fi
-		if [ $_breakOutOfTest = 1 ]; then
-			break
-		fi		
+#		if [ $_breakOutOfTest = 1 ]; then
+#			break
+#		fi		
 		   # loop through files listed in list-[gen|unq].txt file
 	done < "$_curList"
 
@@ -201,9 +204,9 @@ function run_test() {
 				# increase the number of errors
 				(( _countNumberOfErrors++ ))
 			fi
-			if [ $_breakOutOfTest = 1 ]; then
-				break
-			fi
+			#if [ $_breakOutOfTest = 1 ]; then
+			#	break
+			#fi
 		done
 		  # loop through files listed in list-[gen|unq].txt file
 	done < "$_curList"
