@@ -16,7 +16,7 @@ source config/specifyPathToCommand.sh
 # Set to 1 to agree; 0 to disagree.
 _acknowledgeAndAgreeToUSAGE_AGREEMENT=0
 
-# INSTRUCTIONS:
+# REQUIRED CONFIG INSTRUCTIONS:
 #  1. Define the new repo name in variable.
 #  2. Change the config variables.
 #  3. Define options to run with command in array and redirects.
@@ -26,6 +26,18 @@ _acknowledgeAndAgreeToUSAGE_AGREEMENT=0
 #  7. Change the unique repo for focus items of test.
 #  8. CHANGE COMMAND SYNTAX VARIABLE _commandSyntax <---IMPORTANT !!!!
 #     - If needed edit data-test file.  104 an 107.
+#########################################################################################
+#
+# OPTIONAL CONFIG INSTRUCTIONS:
+#  1. Change run-time and run-size variables.
+#  2. Change diff commands output
+#########################################################################################
+
+#########################################################################################
+## START USER CONFIGURATION ##
+
+############################################
+# START REQUIRED
 
 # I. DEFINE NEW REPO
 # Name of new repository for tests result. 
@@ -83,11 +95,28 @@ _commandSyntax() {
   # Any additional lines. If needed edit data-test
 }
 
-## END USER CONFIGURATION ##
-############################
+# END REQUIRED
+############################################
+############################################
 
+############################################
+# START OPTIONAL
+
+#seconds
+_max_run_time=20
+# MB - HERE
+_max_test_size=10000000
+
+# END OPTIONAL
+############################################
+############################################
+
+## END USER CONFIGURATION ##
+#########################################################################################
+#########################################################################################
+
+#########################################################################################
 ## START CONFIGURATION SCRIPTS ##
-#################################
 # NOTE - the below lines are not inteded to be edited.
 #        only edit if you know what you're doing.
 

@@ -5,8 +5,7 @@
 # Get the ready command to use.
 _readyCommand="$1"
 
-# Source pre-made config for roffit.
-source data/ready/"$_readyCommand"/config-variables.sh
+# Change in sourced script that prevents recurse.
 sed -i "s|_readyCommand=CHANGE_READY_COMMAND|_readyCommand=\"$_readyCommand\"|" data/ready/ready-source.sh
 
 _promptForUserInput() {
@@ -73,4 +72,3 @@ else
  _checkInputError="200"
  _promptForUserInput 0
 fi
-

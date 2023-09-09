@@ -2,8 +2,12 @@
 # make-ready
 # Make the config-variable.sh from previously used commands.
 
+
 # Source from config-prompt.sh
 source data/ready/ready-source.sh
+
+# Reconfigure script
+_readyConfig="data/ready/$_readyCommand/config.sh"
 
 # Determine how repo with command is named.
 _structureSet="$1"
@@ -17,8 +21,9 @@ fi
 
 # Copy ready files to test data folders and reset config-variables.sh
 rm data/quick-test/gen/* && rm data/quick-test/unq/*
+
 cp -f data/ready/"$_readyCommand"/data/gen/* data/quick-test/gen/ && cp -f data/ready/"$_readyCommand"/data/unq/* data/quick-test/unq/
-cp -f data/ready/"$_readyCommand"/config-variables.sh ./config-variables.sh
+./$_readyConfig
 
 # Make config if username and repo matched.
 if [ "$_structureSet" = "username" ]; then
@@ -34,5 +39,3 @@ elif [ "$_partialSet" = "1" ]; then
 else
 	echo Files were MINIMALLY configured for pre-made "$_readyCommand". Please review everything and follow insructions in README.md to run tests.
 fi
-# mark config-variables.sh as ready
-sed -i "s|_readied=0||" config-variables.sh
