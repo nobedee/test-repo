@@ -6,6 +6,7 @@
 _readyCommand="$1"
 
 # Change in sourced script that prevents recurse.
+source config-variables.sh
 sed -i "s|_readyCommand=CHANGE_READY_COMMAND|_readyCommand=\"$_readyCommand\"|" data/ready/ready-source.sh
 
 _promptForUserInput() {
