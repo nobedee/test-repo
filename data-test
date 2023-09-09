@@ -255,7 +255,7 @@ touch support/diff-stats.txt
 #################################################################################
 
 # Calculate the percent of files with error/differences
-_percentOfFilesWithError=$(( ( (_countNumberOfErrors/"${#_optionsToRun[@]}") * 100) / _numberOfFilesTested ))
+_percentOfFilesWithError=$(( ( (_countNumberOfErrors/${#_optionsToRun[@]}) * 100) / _numberOfFilesTested ))
 _percentOfBuiltFilesWithError=$(( (_builtFilesWithDifferences * 100) / _numberOfFilesBuilt ))
 
 # Output html elements to support file parsed into index.html
