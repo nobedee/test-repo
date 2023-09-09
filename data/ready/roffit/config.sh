@@ -12,7 +12,7 @@ _configReadyUnique="_unqUser\=\"curl\""
 sed -i "s|_COMMAND_TEST=\"command\"|_COMMAND_TEST=\"$_configReadyCommand\"|" config-variables.sh
 sed -i "s|_sourceUserName=\"source\"|_sourceUserName=\"$_configReadySourceUser\"|" config-variables.sh
 
-sed -i "s|_repoName=\"command-repo\"\"|_repoName=\"repo-name\"|" config-variables.sh
+sed -i "s|_repoName=\"command-repo\"|_repoName=\"repo-name\"|" config-variables.sh
 
 sed -i "s|declare -a _optionsToRun=(\"\")|$_configReadyOptions|" config-variables.sh
 sed -i "s|declare -a _fileExtensions=('.ext1' '.ext2' '.ext3')|$_configReadyExtensions|" config-variables.sh
