@@ -387,7 +387,7 @@ sed -i "s/CHANGE_USER/$_pullUserName/" README.md
 sed -i "s/CHANGE_REPO/$_testResultRepo/" README.md
 
 # Change  user and repo in index.html
-sed -i "s|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|var cur_test_results = \"https://github.com/$_pullUserName/$_testResultRepo/blob/main/\";|" scripts.html
+sed -i "s|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|var cur_test_results = \"https://github.com/$_pullUserName/$_testResultRepo/blob/main/\";|" scripts.js
 
 # remove option call signs
 sed -i -E 's/([-]+)(.*)/\2/g' support/options-ran.txt
