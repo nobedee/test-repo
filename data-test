@@ -16,8 +16,9 @@ source config-variables.sh
 check_if_user_agreed_exit_if_not # check if agreed to terms, exit if not
 _file="source" # DO NOT CHANGE - sets file name for test pages
 _start_timing_test="$(date +%s.%N)" # DO NOT CHANGE - compare to _max-run-time
-_breakOutOfTest=0 # DO NOT CHANGE - safely exit if max reached - currently off
-_closeOutTest=0   # DO NOT CHANGE - safely exit if max reached - currently off
+_breakOutOfTest=0    # DO NOT CHANGE - safely exit if max reached - currently off
+_closeOutTest=0      # DO NOT CHANGE - safely exit if max reached - currently off
+_maxTimeWasReached=0 # DO NOT CHANGE - safely exit if max reached - currently off
 
 # The number of opttions that will run when testing.
 # Array _optionsToRun is from congig-variables.sh.
@@ -26,6 +27,8 @@ _numberOfOptionsRan="${#_optionsToRun[@]}"
 # Incrementers to show error stats.
 _numberOfFilesTested=0
 _numberOfFilesBuilt=0
+_numberOfSourceFilesBuilt=0
+_numberOfPullFilesBuilt=0
 _countNumberOfErrors=0
 _percentOfFilesWithError=0
 
@@ -61,12 +64,17 @@ declare -a _runTimes && declare -a _sourceRuns && declare -a _pullRuns
 
 # check that max time is not reached.
 function check_max_run_time() {
-	_current_run_time="$(date +%s.%N)"
-	_current_run_seconds=$(echo "$_current_run_time - $_start_timing_test >= $_max_run_time" | bc -l)
-	if [ $_current_run_seconds = 1 ]; then
-		_closeOutTest=1
-	else
-		_closeOutTest=0
+	if [ $_breakOutOfTest = 1 ]; then
+		_start_timing_test="$(date +%s.%N)"
+		_breakOutOfTest=0
+	else	
+		_current_run_time="$(date +%s.%N)"
+		_current_run_seconds=$(echo "$_current_run_time - $_start_timing_test >= $_max_run_time" | bc -l)
+		if [ $_current_run_seconds = 1 ]; then
+			_closeOutTest=1
+		else
+			_closeOutTest=0
+		fi
 	fi
 }
 
@@ -100,8 +108,10 @@ function run_test() {
 			# append to correct array by either source or pull command
 			# that is specified in config variab le "_useSource" at top
 			if [ "$_file" = "source" ]; then
+				(( _numberOfSourceFilesBuilt++ ))
 				_sourceRuns+=("$_oneRun")
 			else
+				(( _numberOfPullFilesBuilt++ ))
 				_pullRuns+=("$_oneRun")
 			fi
 		fi
@@ -126,66 +136,56 @@ function run_test() {
 			fi
 			# increase the number of files built
 			(( _numberOfFilesBuilt++ ))
-			# check that max time is not reached
-			check_max_run_time
-			if [ $_closeOutTest = 1 ]; then
-				echo MAX TIME
-				_breakOutOfTest=1
-				break
-			fi			
 		done
 		# loop through options that created files and check for differences in 
 		# source and pull differences in created files
 		for opts in "${_optionsToRun[@]}"; do
 			if [ "$opts" = "" ]; then
-					opts="-default"
+				opts="-default"
 			fi
+			# compare the built files
 			if [ "$1" = "source" ]; then
-				# condition that creates comparable files depending on whichever command
-				# is used first
-				if [ -e "tests/$_curData/$line-pull$opts.html" ]; then
-					# pull command used before source
-					diff tests/"$_curData"/"$line"-pull"$opts".html tests/"$_curData"/"$line"-source"$opts".html > diff/"$_curData"/"$line""$opts".txt
-				else
-					# source command before pull command
-					cp tests/"$_curData"/"$line"-source"$opts".html tests/"$_curData"/"$line"-pull"$opts".html
-				fi
+				_invertRepo="pull"
 			else
-				if [ -e "tests/$_curData/$line-source$opts.html" ]; then
-					# source command used before pull command
-					diff tests/"$_curData"/"$line"-source"$opts".html tests/"$_curData"/"$line"-pull"$opts".html > diff/"$_curData"/"$line""$opts".txt
-				else
-					# pull command used before source command
-					cp tests/"$_curData"/"$line"-pull"$opts".html tests/"$_curData"/"$line"-source"$opts".html
+				_invertRepo="source"
+			fi
+			# if file has been built
+			if [ -e "tests/$_curData/$line-$_invertRepo$opts.html" ]; then
+				# difference based on arguments setting variables.
+				if ! diff -q tests/"$_curData"/"$line"-"$_invertRepo""$opts".html tests/"$_curData"/"$line"-"$1""$opts".html >/dev/null; then
+					$_diffCommand tests/"$_curData"/"$line"-"$_invertRepo""$opts".html tests/"$_curData"/"$line"-"$1""$opts".html > diff/"$_curData"/"$line""$opts".txt
 				fi
 			fi
-			# check that max time is not reached
-			check_max_run_time
-			if [ $_closeOutTest = 1 ]; then
-				echo MAX TIME
-				_breakOutOfTest=1
-				break
-			fi						
 		done
+		# check that max time is not reached
+		check_max_run_time
+		if [ $_closeOutTest = 1 ]; then
+			echo MAX TIME
+			_maxTimeWasReached=1
+			_breakOutOfTest=1
+			return
+		fi
 	}
-	# make html files by command being used using repetitive functions above
+	# make files by command being used using repetitive functions above
 	# file naming will be [file_name]-[source|pull]-[""|"${opt[x]}"].html
 	while read -r line; do
+		# end if max time has been reached
 		if [ $_breakOutOfTest = 1 ]; then
 			break
-		fi		
-		# increase count of files that were tested (files in data/[full|quick]-test folder(s)
-		(( _numberOfFilesTested++ ))
-		if [ "$_useSource" = 1 ]; then
-			# run using source command
-			run_command "source"
-		else
-			# run using pull command
-			run_command "pull"
+		else		
+			# increase count of files that were tested (files in data/[full|quick]-test folder(s)
+			(( _numberOfFilesTested++ ))
+			if [ "$_useSource" = 1 ]; then
+				# run using source command
+				run_command "source"
+			else
+				# run using pull command
+				run_command "pull"
+			fi
 		fi
-#		if [ $_breakOutOfTest = 1 ]; then
-#			break
-#		fi		
+	#		if [ $_breakOutOfTest = 1 ]; then
+	#			break
+	#		fi		
 		   # loop through files listed in list-[gen|unq].txt file
 	done < "$_curList"
 
@@ -213,73 +213,93 @@ function run_test() {
 }
 
 # Run test with initial set source.
-run_test "list-gen.txt" "gen" && run_test "list-unq.txt" "unq"
+run_test "list-gen.txt" "gen" 
+run_test "list-unq.txt" "unq"
 
 # Use command in pull request.
 # Redefine source command to use based on config from top (default is _useSource=1).
 if [ "$_useSource" = 1 ]; then  _useSource=0; else  _useSource=1; fi
 
-# Run test with invert of initial set source.
-run_test "list-gen.txt" "gen" && run_test "list-unq.txt" "unq"
+# Check if max time was reacehd and needs to be reset.
+check_max_run_time
 
-# Redefine _numberOfFilesTested as to not divide total later.
-if [ $_breakOutOfTest = 0 ]; then
+# Run test with invert of initial set source.
+run_test "list-gen.txt" "gen" 
+run_test "list-unq.txt" "unq"
+
+# Check if either source or pull went over max time.
+if [ $_maxTimeWasReached = 1 ]; then
+	_generateErrorMessage=1
+else
 	_generateErrorMessage=0
 	_numberOfFilesTested=$(( ($_numberOfFilesTested / 2) ))
-else
-	_generateErrorMessage=1
 fi
 
 # Make support files for html links.
-ls -1 tests/unq/*-source* > support/menu-unq-links.txt && ls -1 tests/err/*-source* > support/menu-err-links.txt && ls -1 tests/gen/*-source* > support/menu-gen-links.txt
+ls -1 tests/unq/*-source* > support/menu-unq-links.txt 2>/dev/null
+ls -1 tests/err/*-source* > support/menu-err-links.txt 2>/dev/null
+ls -1 tests/gen/*-source* > support/menu-gen-links.txt 2>/dev/null
+
 # Replace the temporary filler text to fit test outputs.
-sed -i "s/source/COMMAND_USED/g" support/menu-unq-links.txt && sed -i "s/source/COMMAND_USED/g" support/menu-err-links.txt && sed -i "s/source/COMMAND_USED/g" support/menu-gen-links.txt
+sed -i "s/source/COMMAND_USED/g" support/menu-unq-links.txt 2>/dev/null
+sed -i "s/source/COMMAND_USED/g" support/menu-err-links.txt 2>/dev/null
+sed -i "s/source/COMMAND_USED/g" support/menu-gen-links.txt 2>/dev/null
 
 # Create a text file with contents of all diff files. 
-ls -p1 diff/err/* | grep -v '/$' > diff/errList.txt && touch diff/errs.txt
+ls -p1 diff/err/* 2>/dev/null | grep -v '/$' > diff/errList.txt 2>/dev/null
+touch diff/errs.txt
+
+# Change script variable for default diff command use if not "diff"
+if [ "$_diffCommand" = "diff" ]; then
+	sed -i "s|var diffDefault=.|var diffDefault=1|" scripts.js
+else
+	sed -i "s|var diffDefault=.|var diffDefault=0|" scripts.js
+fi
 
 # Loop through diff file and output files' terminal output to html and count number built.
 _builtFilesWithDifferences=0
 while read -r line; do
 	# header for file name
-	echo "<h3>${line##*/}</h3>" >> diff/errs.txt
+	echo "---h3-data-conversion-test_tag---${line##*/}---c-h3-data-conversion-test_tag---" >> diff/errs.txt	
 	# file contents
 	cat "$line" >> diff/errs.txt
 	# add space and separation marker
-	echo "<br><hr><br>" >> diff/errs.txt
+	echo "---br_hr_br-data-conversion-test_tag---" >> diff/errs.txt
 	# increment built files with differences
 	(( _builtFilesWithDifferences++ ))
 done < diff/errList.txt
 # Account for source and pull
-(( _builtFilesWithDifferences*="${#_optionsToRun[@]}" ))
+(( _builtFilesWithDifferences*="$_numberOfOptionsRan" ))
 
 # Make statistic html section.
-touch support/diff-stats.txt
+cp templates/diff-stats.html support/diff-stats.txt
 #################################################################################
 
 # Calculate the percent of files with error/differences
-_percentOfFilesWithError=$(( ( (_countNumberOfErrors/${#_optionsToRun[@]}) * 100) / _numberOfFilesTested ))
+_percentOfFilesWithError=$(( ( (_countNumberOfErrors/_numberOfOptionsRan) * 100) / _numberOfFilesTested ))
 _percentOfBuiltFilesWithError=$(( (_builtFilesWithDifferences * 100) / _numberOfFilesBuilt ))
+_percentOfFilesWithDifferences=$(( (_countNumberOfErrors /_numberOfOptionsRan) ))
 
-# Output html elements to support file parsed into index.html
+# Edit copied template file for output differences. Comment at end correspond to comment in template file.
 if [ $_generateErrorMessage = 1 ]; then
-	echo "<h2 style='color: red'>MAX-TIMEOUT WAS REACHED</h2><p style='margin-top:-15px'>As a result of max-time reach the <strong>stats</strong> below may be inaccurate.</p><hr>" >> support/diff-stats.txt
+	sed -i "s|_GENERATEERRORMESSAGE|block|" support/diff-stats.txt # error message
+else
+	sed -i "s|_GENERATEERRORMESSAGE|none|" support/diff-stats.txt # error message
 fi
-echo "<p>The files tested are the number of files that were used for test. These files at the very least will be doubled relative to files built.</p>" >> support/diff-stats.txt
-echo "<p><strong>Total Files Tested</strong>  - $_numberOfFilesTested</p>" >> support/diff-stats.txt
-echo "<p><strong>Tested Files with Differences</strong> - $((_countNumberOfErrors / ${#_optionsToRun[@]}))</p>" >> support/diff-stats.txt
-echo "<p><h3 style=\"display:inline\">File Difference Percentage</h3> - $_percentOfFilesWithError</p>  " >> support/diff-stats.txt
-echo "<hr>" >> support/diff-stats.txt
-echo "<p>The files built account for files tested (x1) for source and pull (x2) for options (xUsed).</p>" >> support/diff-stats.txt
-echo "<p><small>built = (optonCount x filesTested) * 2 (<em>source and pull repo)</em> ---" >> support/diff-stats.txt
-echo "So--- optonCount = $_numberOfOptionsRan ; filesTested= $_numberOfFilesTested;  repos = 2;</small></p>" >> support/diff-stats.txt
-echo "<p><strong>Total Files Built</strong>  - $_numberOfFilesBuilt</p>" >> support/diff-stats.txt
-echo "<p><strong>Total Files with Differences</strong> - $_builtFilesWithDifferences</p>" >> support/diff-stats.txt
-echo "<p><h3 style=\"display:inline\">Built Difference Percentage</h3> - $_percentOfBuiltFilesWithError</p>" >> support/diff-stats.txt
-echo "<hr>" >> support/diff-stats.txt
+
+sed -i "s|_numberOfFilesTested|$_numberOfFilesTested|" support/diff-stats.txt # total files
+
+sed -i "s|_percentOfFilesWithDifferences|$_percentOfFilesWithDifferences|" support/diff-stats.txt # percent with differneces
+sed -i "s|_percentOfFilesWithError|$_percentOfFilesWithError|" support/diff-stats.txt # test with differeneces
+
+sed -i "s|_numberOfOptionsRan|$_numberOfOptionsRan|" support/diff-stats.txt # options run
+sed -i "s|_numberOfFilesTested|$_numberOfFilesTested|" support/diff-stats.txt # files tested
+sed -i "s|_numberOfFilesBuilt|$_numberOfFilesBuilt|" support/diff-stats.txt # total built
+sed -i "s|_builtFilesWithDifferences|$_builtFilesWithDifferences|" support/diff-stats.txt # total with difference
+sed -i "s|_percentOfBuiltFilesWithError|$_percentOfBuiltFilesWithError|" support/diff-stats.txt # built difference percent
 
 # Make run time html section.
-touch support/run-times.txt
+cp templates/run-times.html support/run-times.txt
 #################################################################################
 
 # Function to calculate basic run time stats.
@@ -331,22 +351,24 @@ repetitive_diff() {
 	fi	
 }
 
-# Output html elements to support file parsed into index.html
-echo "<p>The individual run times are the individual build times for each fie. Each " > support/run-times.txt
-echo "item in the array is added up so that total can be compared with sum. The " >> support/run-times.txt
-echo "average build time is also included along with a comparison of the average " >> support/run-times.txt
-echo "build for source and pull command.</p>" >> support/run-times.txt
-# Start stats.
-echo "<p><strong>Summed Source Builds</strong> - $_sourceSumRuns</p>" >> support/run-times.txt
-echo "<p><strong>Summed Pull Builds</strong> - $_pullSumRuns</p>" >> support/run-times.txt
-repetitive_diff "$_numberOfFilesBuilt files" "$_allFastOrSlow" # sum of all builds compared
-echo "<p><h3 style=\"display:inline\">Sum Difference</h3> - $_fastOrSlow</p>" >> support/run-times.txt
-echo "<hr>" >> support/run-times.txt
-echo "<p><strong>Average Source Build</strong> - $_sourceAvgRuns</p>" >> support/run-times.txt
-echo "<p><strong>Average Pull Builds</strong> - $_pullAvgRuns</p>" >> support/run-times.txt
-repetitive_diff "1 file on average" "$_avgFastOrSlow" # average of all builds compared
-echo "<p><h3 style=\"display:inline\">Average Difference</h3> - $_fastOrSlow</p>" >> support/run-times.txt
-echo "<hr>" >> support/run-times.txt
+
+# Edit copied template file with stats. Comment at end correspond to comment in template file.
+sed -i "s|_numberOfSourceFilesBuilt|$_numberOfSourceFilesBuilt|" support/run-times.txt # total source file
+sed -i "s|_sourceSumRuns|$_sourceSumRuns|" support/run-times.txt # total source time
+sed -i "s|_numberOfPullFilesBuilt|$_numberOfPullFilesBuilt|" support/run-times.txt # total pull file
+sed -i "s|_pullSumRuns|$_pullSumRuns|" support/run-times.txt # total pull time
+
+# Sum of all builds compared.
+repetitive_diff "$_numberOfFilesBuilt files" "$_allFastOrSlow" 
+
+sed -i "s|_fastOrSlowOne|$_fastOrSlow|" support/run-times.txt # time difference
+sed -i "s|_sourceAvgRuns|$_sourceAvgRuns|" support/run-times.txt # average source
+sed -i "s|_pullAvgRuns|$_pullAvgRuns|" support/run-times.txt # average pull
+
+# Average of all builds compared.
+repetitive_diff "1 file on average" "$_avgFastOrSlow" 
+
+sed -i "s|_fastOrSlowTwo|$_fastOrSlow|" support/run-times.txt # average of all builds compared
 
 # Make drop items and menu text by commands used.
 #################################################################################
@@ -365,7 +387,7 @@ sed -i "s/CHANGE_USER/$_pullUserName/" README.md
 sed -i "s/CHANGE_REPO/$_testResultRepo/" README.md
 
 # Change  user and repo in index.html
-sed -i "s|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|var cur_test_results = \"https://github.com/$_pullUserName/$_testResultRepo/blob/main/\";|" index.html
+sed -i "s|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|var cur_test_results = \"https://github.com/$_pullUserName/$_testResultRepo/blob/main/\";|" scripts.html
 
 # remove option call signs
 sed -i -E 's/([-]+)(.*)/\2/g' support/options-ran.txt

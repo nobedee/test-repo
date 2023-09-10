@@ -36,7 +36,7 @@ ask.clone:
 retest:
 	@rm -rf diff/* support/* tests/* data/full-test/*
 	@sed -i "s|https://github.com/.*/.*/blob/main/index.html|https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/index.html|" README.md
-	@sed -i "s|var cur_test_results = \"https://github.com/.*/.*/blob/main/\";|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|" index.html
+	@sed -i "s|var cur_test_results = \"https://github.com/.*/.*/blob/main/\";|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|" scripts.html
 	@if [ -e list-gen.txt ]; then \
 		rm list-gen.txt; \
 	fi
@@ -53,7 +53,7 @@ clean:
 		rm -rf diff commands support tests; \
 	fi
 	@sed -i "s|https://github.com/.*/.*/blob/main/index.html|https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/index.html|" README.md
-	@sed -i "s|var cur_test_results = \"https://github.com/.*/.*/blob/main/\";|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|" index.html
+	@sed -i "s|var cur_test_results = \"https://github.com/.*/.*/blob/main/\";|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|" scripts.html
 	@if [ -d "reset" ]; then \
 		echo Resetting to initial config.; \
 		mv reset/config-variables.sh ./config-variables.sh; \

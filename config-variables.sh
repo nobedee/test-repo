@@ -29,8 +29,9 @@ _acknowledgeAndAgreeToUSAGE_AGREEMENT=0
 #########################################################################################
 #
 # OPTIONAL CONFIG INSTRUCTIONS:
-#  1. Change run-time and run-size variables.
-#  2. Change diff commands output
+#  1. Change max run time for both source and pull builds in run-time variable.
+#  2. Change max build size for test in run-size variable.
+#  3. Change diff commands output
 #########################################################################################
 
 #########################################################################################
@@ -99,21 +100,27 @@ _commandSyntax() {
 ############################################
 ############################################
 
+
 ############################################
 # START OPTIONAL
 
-#seconds
-_max_run_time=20
-# MB - HERE
+# Max number of seconds each command has to run test.
+_max_run_time=120
+
+# Max size the test can build with both commands.
 _max_test_size=10000000
+
+# Syntax for how the "diff" command will be used.
+_diffCommand="diff"
 
 # END OPTIONAL
 ############################################
 ############################################
-
 ## END USER CONFIGURATION ##
 #########################################################################################
 #########################################################################################
+
+
 
 #########################################################################################
 ## START CONFIGURATION SCRIPTS ##
@@ -131,3 +138,7 @@ else
     rm -rf commands
   fi
 fi
+
+## END CONFIGURATION SCRIPTS ##
+#########################################################################################
+#########################################################################################
