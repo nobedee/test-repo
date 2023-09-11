@@ -16,9 +16,11 @@ source config-variables.sh
 check_if_user_agreed_exit_if_not # check if agreed to terms, exit if not
 _file="source" # DO NOT CHANGE - sets file name for test pages
 _start_timing_test="$(date +%s.%N)" # DO NOT CHANGE - compare to _max-run-time
-_breakOutOfTest=0    # DO NOT CHANGE - safely exit if max reached - currently off
-_closeOutTest=0      # DO NOT CHANGE - safely exit if max reached - currently off
-_maxTimeWasReached=0 # DO NOT CHANGE - safely exit if max reached - currently off
+_breakOutOfTest=0      # DO NOT CHANGE - safely exit build if max reached - currently off
+_breakOutOfTestSize=0  # DO NOT CHANGE - safely exit build if max reached - currently off
+_closeOutTest=0        # DO NOT CHANGE - indicates max time is reached - currently off
+_maxTimeWasReached=0   # DO NOT CHANGE - alters test output if max reached - currently off
+_maxSizeWasReached=0   # DO NOT CHANGE - alters test output if max reached - currently off
 
 # The number of opttions that will run when testing.
 # Array _optionsToRun is from congig-variables.sh.
@@ -61,22 +63,6 @@ fi
 
 # Define timing arrays.
 declare -a _runTimes && declare -a _sourceRuns && declare -a _pullRuns
-
-# check that max time is not reached.
-function check_max_run_time() {
-	if [ $_breakOutOfTest = 1 ]; then
-		_start_timing_test="$(date +%s.%N)"
-		_breakOutOfTest=0
-	else	
-		_current_run_time="$(date +%s.%N)"
-		_current_run_seconds=$(echo "$_current_run_time - $_start_timing_test >= $_max_run_time" | bc -l)
-		if [ $_current_run_seconds = 1 ]; then
-			_closeOutTest=1
-		else
-			_closeOutTest=0
-		fi
-	fi
-}
 
 # Function to make html with option and no option call.
 # Then make corresponding files in diff folder
@@ -157,7 +143,6 @@ function run_test() {
 				fi
 			fi
 		done
-		# check that max time is not reached
 		check_max_run_time
 		if [ $_closeOutTest = 1 ]; then
 			echo MAX TIME
@@ -165,12 +150,20 @@ function run_test() {
 			_breakOutOfTest=1
 			return
 		fi
+		# check that max time is not reached
+		check_max_test_size "check"
+		if [ $_closeOutTest = 1 ]; then
+			echo MAX SIZE
+			_maxSizeWasReached=1
+			_breakOutOfTestSize=1
+			return
+		fi		
 	}
 	# make files by command being used using repetitive functions above
 	# file naming will be [file_name]-[source|pull]-[""|"${opt[x]}"].html
 	while read -r line; do
 		# end if max time has been reached
-		if [ $_breakOutOfTest = 1 ]; then
+		if [ $_breakOutOfTest = 1 ] || [ $_breakOutOfTestSize = 1 ]; then
 			break
 		else		
 			# increase count of files that were tested (files in data/[full|quick]-test folder(s)
@@ -183,9 +176,6 @@ function run_test() {
 				run_command "pull"
 			fi
 		fi
-	#		if [ $_breakOutOfTest = 1 ]; then
-	#			break
-	#		fi		
 		   # loop through files listed in list-[gen|unq].txt file
 	done < "$_curList"
 
@@ -197,16 +187,13 @@ function run_test() {
 			if [ "$opts" = "" ]; then
 				opts="-default"
 			fi
-			# check for differnces if by seeing if file is NOT empty
+			# ensure differnces by seeing if file is NOT empty
 			if [ -s diff/"$_curData"/"$line""$opts".txt ]; then
 				mv diff/"$_curData"/"$line""$opts".txt diff/err/"$line""$opts".txt 2>/dev/null
 				mv tests/"$_curData"/"$line"*"$opts".html tests/err/ 2>/dev/null
 				# increase the number of errors
 				(( _countNumberOfErrors++ ))
 			fi
-			#if [ $_breakOutOfTest = 1 ]; then
-			#	break
-			#fi
 		done
 		  # loop through files listed in list-[gen|unq].txt file
 	done < "$_curList"
@@ -220,6 +207,8 @@ run_test "list-unq.txt" "unq"
 # Redefine source command to use based on config from top (default is _useSource=1).
 if [ "$_useSource" = 1 ]; then  _useSource=0; else  _useSource=1; fi
 
+# Check if max size was reached and needs to be reset.
+check_max_test_size "reset"
 # Check if max time was reacehd and needs to be reset.
 check_max_run_time
 
@@ -229,10 +218,16 @@ run_test "list-unq.txt" "unq"
 
 # Check if either source or pull went over max time.
 if [ $_maxTimeWasReached = 1 ]; then
-	_generateErrorMessage=1
+	_generateTimeErrorMessage=1
 else
-	_generateErrorMessage=0
+	_generateTimeErrorMessage=0
 	_numberOfFilesTested=$(( ($_numberOfFilesTested / 2) ))
+fi
+# Check if either source or pull went over max size.
+if [ $_maxSizeWasReached = 1 ]; then
+	_generateSizeErrorMessage=1
+else
+	_generateSizeErrorMessage=0	
 fi
 
 # Make support files for html links.
@@ -281,11 +276,19 @@ _percentOfBuiltFilesWithError=$(( (_builtFilesWithDifferences * 100) / _numberOf
 _percentOfFilesWithDifferences=$(( (_countNumberOfErrors /_numberOfOptionsRan) ))
 
 # Edit copied template file for output differences. Comment at end correspond to comment in template file.
-if [ $_generateErrorMessage = 1 ]; then
-	sed -i "s|_GENERATEERRORMESSAGE|block|" support/diff-stats.txt # error message
+# Show time error message.
+if [ $_generateTimeErrorMessage = 1 ]; then
+	sed -i "s|_GENERATE-TIME-ERRORMESSAGE|block|" support/diff-stats.txt # time error message
 else
-	sed -i "s|_GENERATEERRORMESSAGE|none|" support/diff-stats.txt # error message
+	sed -i "s|_GENERATE-TIME-ERRORMESSAGE|none|" support/diff-stats.txt # time error message
 fi
+# Show size error message.
+if [ $_generateSizeErrorMessage = 1 ]; then
+	sed -i "s|_GENERATE-SIZE-ERRORMESSAGE|block|" support/diff-stats.txt # size error message
+else
+	sed -i "s|_GENERATE-SIZE-ERRORMESSAGE|none|" support/diff-stats.txt # size error message
+fi
+
 
 sed -i "s|_numberOfFilesTested|$_numberOfFilesTested|" support/diff-stats.txt # total files
 
@@ -382,9 +385,46 @@ for opts in "${_optionsToRun[@]}"; do
 done
 echo "${_COMMAND_TEST^}" > support/COMMAND-USED.txt
 
+# Change README.md to show test results.
+if [ $_currentTest = "quick-test" ]; then
+	cp templates/quick-README.md README.md 2>/dev/null
+	# Make list of files tested.
+	touch .temp-filesTested.txt
+	# list of files to update
+	list_files_tested=("list-gen.txt" "list-unq.txt")
+
+	# loop through the files tested
+	for files in "${list_files_tested[@]}"; do
+		cat $files >> .temp-filesTested.txt
+	done
+	sed -i 's/^/   - /' .temp-filesTested.txt
+else
+	cp reset/full-README.md README.md 2>/dev/null
+	# Make list of files tested.
+	touch .temp-filesTested.txt
+
+	# loop through the files tested
+	for ext in "${_fileExtensions[@]}"; do
+		cat $ext >> .temp-filesTested.txt
+	done
+	sed -i 's/^/   - /' .temp-filesTested.txt
+	echo >> .temp-filesTested.txt
+	while (( index < ${#__fullTestRepos[@]} -1 )); do
+		_user=${_fullTestRepos[index]}
+		_repo=${_fullTestRepos[index + 1]}
+		echo "   - $_user/$_repo".git >> .temp-filesTested.txt
+		index=$((index + 2))
+	done
+	echo >> .temp-filesTested.txt
+fi
+
 # Change link in README.md
-sed -i "s/CHANGE_USER/$_pullUserName/" README.md
-sed -i "s/CHANGE_REPO/$_testResultRepo/" README.md
+sed -i "s/CHANGE_USER/$_pullUserName/g" README.md
+sed -i "s/CHANGE_REPO/$_testResultRepo/g" README.md
+sed -i "s/CHANGE_SOURCE_USER/$_sourceUserName/g" README.md
+sed -i "s/CHANGE_COMMAND_TEST/$_COMMAND_TEST/g" README.md
+awk -v _test_file_list="$(cat .temp-filesTested.txt)" '{gsub("CHANGE_FILE_LIST", _test_file_list)}1' README.md >> .outREADME.md
+mv .outREADME.md README.md 2>/dev/null
 
 # Change  user and repo in index.html
 sed -i "s|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/\";|var cur_test_results = \"https://github.com/$_pullUserName/$_testResultRepo/blob/main/\";|" scripts.js
@@ -393,7 +433,7 @@ sed -i "s|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/bl
 sed -i -E 's/([-]+)(.*)/\2/g' support/options-ran.txt
 
 # Clean up folder.
-rm list-gen.txt list-unq.txt
+rm list-gen.txt list-unq.txt .temp-filesTested.txt
 
 # Remove command as no longer needed.
 if [ ! -e .localCommandUsed ]; then

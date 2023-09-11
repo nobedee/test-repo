@@ -4,7 +4,7 @@
 ### Any files created by the test are subject to the   ###
 ### license specified in that reposityor.              ###
 ##########################################################
-.PHONY: check-mac
+.PHONY: check-mac reset.folder
 
 check-mac:
 	@if [ -e MAC-ME ]; then \
@@ -12,19 +12,22 @@ check-mac:
 		mv MAC-ME .MAC-ME; \
 	fi
 
-all: check-mac
+reset.folder:
+	@if [ ! -d "reset" ]; then \
+		mkdir reset; \
+		cp README.md reset/README.md; \
+		cp -f config-variables.sh reset/config-variables.sh; \
+	fi
+
+all: check-mac reset.folder
 	@./extract-full-data.sh
 	@./data-test 1
 
-quick: check-mac
+quick: check-mac reset.folder	
 	@./data-test
 	
 # Ready made test. See "Ready Made Tests" in README.md
-roffit: ask.clone check-mac
-	@if [ ! -d "reset" ]; then \
-		mkdir reset; \
-		cp -f config-variables.sh reset/config-variables.sh; \
-	fi
+roffit: ask.clone check-mac reset.folder	
 	@./data/ready/config-prompt.sh "roffit"
 
 # Ask if cloning from GithHub.
@@ -57,6 +60,7 @@ clean:
 	@if [ -d "reset" ]; then \
 		echo Resetting to initial config.; \
 		mv reset/config-variables.sh ./config-variables.sh; \
+		mv reset/README.md ./README.md; \
 		rm -rf reset data/quick-test/gen/* data/quick-test/unq/*; \
 		echo General files. > data/quick-test/gen/General.txt && echo Unique files. > data/quick-test/unq/Unique.txt; \
 		sed -i "s|_readyCommand=.*|_readyCommand=CHANGE_READY_COMMAND|" data/ready/ready-source.sh; \
