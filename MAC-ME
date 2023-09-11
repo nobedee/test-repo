@@ -5,8 +5,8 @@ if command -v sw_vers >/dev/null 2>&1; then
   sed -i '' "s|sed -i|sed -i ''|g" data-test Makefile agree
   sed -i '' "s|\"\$(date +%s.%N)\"|\"\$(python -c 'import time; print(\"%.9f\" % time.time())')\"|g" data-test config/*.sh
   # config functions
-  sed -i "s|find \"\$_current_build_folder\" -type f -name \"\*-pull-\*\" \| xargs du -ch --block-size=1M \| grep total\$ \| cut -f1|find \"\$_current_build_folder\" -type f -name \"\*-pull-\*\" -exec du -ch -k \{\} \+ \| grep total\$ \| cut -f1|" config/checkFileSize.sh
-  sed -i "s|find \"\$_current_build_folder\" -type f -name \"\*-source-\*\" \| xargs du -ch --block-size=1M \| grep total\$ \| cut -f1|find \"\$_current_build_folder\" -type f -name \"\*-source-\*\" -exec du -ch -k \{\} \+ \| grep total\$ \| cut -f1|" config/checkFileSize.sh
+  sed -i '' "s|find \"\$_current_build_folder\" -type f -name \"\*-pull-\*\" \| xargs du -ch --block-size=1M \| grep total\$ \| cut -f1|find \"\$_current_build_folder\" -type f -name \"\*-pull-\*\" -exec du -ch -k \{\} \+ \| grep total\$ \| cut -f1|" config/checkFileSize.sh
+  sed -i '' "s|find \"\$_current_build_folder\" -type f -name \"\*-source-\*\" \| xargs du -ch --block-size=1M \| grep total\$ \| cut -f1|find \"\$_current_build_folder\" -type f -name \"\*-source-\*\" -exec du -ch -k \{\} \+ \| grep total\$ \| cut -f1|" config/checkFileSize.sh
   # main test file
   sed -i '' "s|echo \"\${_COMMAND_TEST\^}\"|echo \"\${_COMMAND_TEST}\" \| awk '{print toupper(substr(\$0, 1, 1)) substr(\$0, 2)}'|g" data-test  
 fi
