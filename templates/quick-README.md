@@ -11,8 +11,6 @@ CHANGE_FILE_LIST
 
 </details>
 
-I included comments in data-test (*file to build test*) where each of the below steps. They should be hard to miss.
-
 ## Test Procedure - Condensed:
 1. Set configuration and ready test elements.
 2. Pending on configuration Either:

@@ -2,16 +2,14 @@
 
 Ctrl + click [test results](https://jhauga.github.io/htmlpreview.github.com/?https://github.com/CHANGE_USER/CHANGE_REPO/blob/main/index.html).
 
-The files used for the test were either selected becuase they had elements the pull request addresses, or selected at random.
-Expand below to show test files:
+The repos used for the test were selected as they had several dozen (*hundred*) files that could be converted with CHANGE_COMMAND_TEST.
+Expand below to show test repos and what file extensions were used: 
 <details>
  <summary>Show Files Tested</summary>
   
 CHANGE_FILE_LIST
    
 </details>
-
-I included comments in data-test (*file to build test*) where each of the below steps. They should be hard to miss.
 
 ## Extract Data Procedure - Condensed:
 1. Set configuration and ready data to be extracted.
