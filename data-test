@@ -399,17 +399,20 @@ if [ $_currentTest = "quick-test" ]; then
 	done
 	sed -i 's/^/   - /' .temp-filesTested.txt
 else
-	cp reset/full-README.md README.md 2>/dev/null
+	cp templates/full-README.md README.md 2>/dev/null
 	# Make list of files tested.
 	touch .temp-filesTested.txt
-
+	echo "### File Extensions:" >> .temp-filesTested.txt
 	# loop through the files tested
 	for ext in "${_fileExtensions[@]}"; do
-		cat $ext >> .temp-filesTested.txt
+		echo "   - $ext" >> .temp-filesTested.txt
 	done
-	sed -i 's/^/   - /' .temp-filesTested.txt
+	# add extra line
 	echo >> .temp-filesTested.txt
-	while (( index < ${#__fullTestRepos[@]} -1 )); do
+	# headerfor repos
+	echo "### GitHub Repositories Tested:" >> .temp-filesTested.txt
+	
+	while (( index < ${#_fullTestRepos[@]} -1 )); do
 		_user=${_fullTestRepos[index]}
 		_repo=${_fullTestRepos[index + 1]}
 		echo "   - $_user/$_repo".git >> .temp-filesTested.txt
