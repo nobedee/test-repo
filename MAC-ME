@@ -10,4 +10,5 @@ if command -v sw_vers >/dev/null 2>&1; then
   # main test file
   sed -i '' "s|echo \"\${_COMMAND_TEST\^}\"|echo \"\${_COMMAND_TEST}\" \| awk '{print toupper(substr(\$0, 1, 1)) substr(\$0, 2)}'|g" data-test
   sed -i '' "s|awk -v _test_file_list=\"\$(cat .temp-filesTested.txt)\" '{gsub(\"CHANGE_FILE_LIST\", _test_file_list)}1' README.md \>\> .outREADME.md|while read r in file\; do sed -i '' \"s\|CHANGE_FILE_LIST\|CHANGE_FILE_LIST \$r\\\n\|\" README.md\; done \< .temp-filesTested.txt\; sed -i '' \"s\|CHANGE_FILE_LIST\|\|g\" README.md |" data-test
+  sed -i '' "s|sed -i '' 's\/\^\/   - \/' .temp-filesTested.txt|while read r in file\; do echo   - \$r \>\> .temptemps-filesTested.txt\; done \< .temp-filesTested.txt\; mv .temptemps-filesTested.txt .temp-filesTested.txt|" data-test
 fi
