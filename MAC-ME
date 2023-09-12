@@ -9,5 +9,5 @@ if command -v sw_vers >/dev/null 2>&1; then
   sed -i '' "s|find \"\$_current_build_folder\" -type f -name \"\*-source-\*\" \| xargs du -ch --block-size=1M \| grep total\$ \| cut -f1|find \$_current_build_folder -type f -name \"\*-source-\*\" -exec du -ch -k -m \{\} \+ \| grep total\$ \| cut -f1|" config/checkFileSizes.sh
   # main test file
   sed -i '' "s|echo \"\${_COMMAND_TEST\^}\"|echo \"\${_COMMAND_TEST}\" \| awk '{print toupper(substr(\$0, 1, 1)) substr(\$0, 2)}'|g" data-test
-  sed -i '' "s|awk -v _test_file_list=\"\$(cat .temp-filesTested.txt)\" '{gsub(\"CHANGE_FILE_LIST\", _test_file_list)}1' README.md \>\> .outREADME.md| while read r in file\; do sed -i '' \"s\|CHANGE_FILE_LIST\|CHANGE_FILE_LIST \$r\\n\|\" README.md\; done \< .temp-filesTested.txt\; sed -i '' \"s\|CHANGE_FILE_LIST\|\|g\" README.md |" data-test
+  sed -i '' "s|awk -v _test_file_list=\"\$(cat .temp-filesTested.txt)\" '{gsub(\"CHANGE_FILE_LIST\", _test_file_list)}1' README.md \>\> .outREADME.md|while read r in file\; do sed -i '' \"s\|CHANGE_FILE_LIST\|CHANGE_FILE_LIST \$r\\\n\|\" README.md\; done \< .temp-filesTested.txt\; sed -i '' \"s\|CHANGE_FILE_LIST\|\|g\" README.md |" data-test
 fi
