@@ -436,7 +436,7 @@ sed -i "s|var cur_test_results = \"https://github.com/CHANGE_USER/CHANGE_REPO/bl
 sed -i -E 's/([-]+)(.*)/\2/g' support/options-ran.txt
 
 # Clean up folder.
-rm list-gen.txt list-unq.txt .temp-filesTested.txt
+#rm list-gen.txt list-unq.txt .temp-filesTested.txt
 
 # Remove command as no longer needed.
 if [ ! -e .localCommandUsed ]; then
