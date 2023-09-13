@@ -3,12 +3,14 @@
 # Test data conversion tool pull request file to ensure no new problems arise, and/or build is not slow or significantly slow down.
 
 ##########################################################
-##################### DATA-TEST ########################
+##################### DATA-TEST ##########################
 ### All files in this repositroy are public domain cc0 ###
 ### Any files created by the test are subject to the   ###
 ### license specified in that reposityor.              ###
 ##########################################################
 
+### 1. SET CONFIGURATION AND READY TEST ELEMENTS ##########################################################################
+###########################################################################################################################
 # Set variables from config-variables.sh. 
 # IMPORTANT - these should have been changed after making repo from template.
 # IMPORTANT - you must agree to terms before use.
@@ -51,6 +53,9 @@ ls -p1 data/"$_currentTest"/unq/ | grep -v '/$' > list-unq.txt
 mkdir -p diff commands support tests
 mkdir -p diff/unq diff/err diff/gen tests/unq tests/err tests/gen
 
+
+### 2. CLONE SOURCE AND PULL GITHUB REPOSITORIES ##########################################################################
+###########################################################################################################################
 # Get source and pulled command file from github.
 function _git_clone_repo() {
 	_curGitHubUser="$1"
@@ -61,6 +66,9 @@ if [ "$_cloneRepo" = "1" ]; then
 	_git_clone_repo "$_sourceUserName" && _git_clone_repo "$_pullUserName"
 fi
 
+
+### 3. START TEST FUNCTION CONFIGURING FUNCTION FOR SOURCE OR PULL. #######################################################
+###########################################################################################################################
 # Define timing arrays.
 declare -a _runTimes && declare -a _sourceRuns && declare -a _pullRuns
 
@@ -81,6 +89,10 @@ function run_test() {
 		# copy to root of testing repo
 		cp commands/"$_pullUserName"-"$_COMMAND_TEST"/"$_COMMAND_TEST" "$_COMMAND_TEST"
 	fi
+
+
+### 4. SET A START AND END TIME FOR EACH BUILD WITH -CHANGE_COMMAND-, PUSHING START AND END TO TWO SEPARATE ARRAYS. 
+###########################################################################################################################	
 	# repetitive function to get time for each build
 	calc_build() {
 		# set starting point before making file
@@ -102,6 +114,10 @@ function run_test() {
 			fi
 		fi
 	}
+
+
+### 5. IN ` RUN_COMMAND() ` SUB-FUNCTION CALL -CHANGE_COMMAND- TO BUILD WITH -S_U- AND -P_U- AND CALCULATE BUILD TIME(S). 
+#############################################################################################################################
 	# repetitive function to make files
 	run_command() {
 		# loop through options specified to run command with
@@ -123,6 +139,10 @@ function run_test() {
 			# increase the number of files built
 			(( _numberOfFilesBuilt++ ))
 		done
+
+
+### 6. DETERMNIN DIFFERENCE AFTER ALL FILES BUILT SECOND IN `RUNC_COMMAND() SUB-FUNCTION. ###################################
+#############################################################################################################################		
 		# loop through options that created files and check for differences in 
 		# source and pull differences in created files
 		for opts in "${_optionsToRun[@]}"; do
@@ -159,6 +179,10 @@ function run_test() {
 			return
 		fi		
 	}
+
+
+### 7. CALL ` RUN_COMMAND() ` SUB-FUNCTION. #################################################################################
+#############################################################################################################################			
 	# make files by command being used using repetitive functions above
 	# file naming will be [file_name]-[source|pull]-[""|"${opt[x]}"].html
 	while read -r line; do
@@ -179,6 +203,9 @@ function run_test() {
 		   # loop through files listed in list-[gen|unq].txt file
 	done < "$_curList"
 
+
+### 8. DETERMINE IF THERE IS A DIFFERENCE, CHECKING EMPTY FILES AND COUNT NUMBER OF DIFFERENCES. ############################
+#############################################################################################################################
 	# move files with differences to errors
 	while read -r line; do
 		# for all options check files created by command
@@ -199,6 +226,9 @@ function run_test() {
 	done < "$_curList"
 }
 
+
+### 9. CALL ` RUN_TEST() ` FUNCTION WITH SOURCE OR PULL, RECONFIGURE AND CALL ` RUN_TEST() ` AGAIN. #########################
+#############################################################################################################################
 # Run test with initial set source.
 run_test "list-gen.txt" "gen" 
 run_test "list-unq.txt" "unq"
@@ -230,6 +260,9 @@ else
 	_generateSizeErrorMessage=0	
 fi
 
+
+### 10. MAKE SUPPORT HTML ELEMENTS FOR DIFFERENCE OUTPUT AND DROPDOWN MENUS. ################################################
+#############################################################################################################################
 # Make support files for html links.
 ls -1 tests/unq/*-source* > support/menu-unq-links.txt 2>/dev/null
 ls -1 tests/err/*-source* > support/menu-err-links.txt 2>/dev/null
@@ -251,6 +284,9 @@ else
 	sed -i "s|var diffDefault=.|var diffDefault=0|" scripts.js
 fi
 
+
+### 11. COMPARE TOTAL FIES BUILT TO FILES WITH DIFFERENCES, OUTPUTTING RESULTS TO SUPPORTING TEXT FILE. #####################
+#############################################################################################################################
 # Loop through diff file and output files' terminal output to html and count number built.
 _builtFilesWithDifferences=0
 while read -r line; do
@@ -268,8 +304,10 @@ done < diff/errList.txt
 
 # Make statistic html section.
 cp templates/diff-stats.html support/diff-stats.txt
-#################################################################################
 
+
+### 12. CALCULATE STATS FOR BUILD TIMES, OUTPUTTING RESULTS TO SUPPORTING TEXT FILE. ########################################
+#############################################################################################################################
 # Calculate the percent of files with error/differences
 _percentOfFilesWithError=$(( ( (_countNumberOfErrors/_numberOfOptionsRan) * 100) / _numberOfFilesTested ))
 _percentOfBuiltFilesWithError=$(( (_builtFilesWithDifferences * 100) / _numberOfFilesBuilt ))
@@ -303,7 +341,6 @@ sed -i "s|_percentOfBuiltFilesWithError|$_percentOfBuiltFilesWithError|" support
 
 # Make run time html section.
 cp templates/run-times.html support/run-times.txt
-#################################################################################
 
 # Function to calculate basic run time stats.
 calc_run_average() {
@@ -373,8 +410,10 @@ repetitive_diff "1 file on average" "$_avgFastOrSlow"
 
 sed -i "s|_fastOrSlowTwo|$_fastOrSlow|" support/run-times.txt # average of all builds compared
 
+
+### 13. MAKE REMAINING SUPPORT HTML ELEMENTS AND CLEAN FILES AND DIRECTORIES. ###############################################
+#############################################################################################################################
 # Make drop items and menu text by commands used.
-#################################################################################
 touch support/options-ran.txt
 for opts in "${_optionsToRun[@]}"; do
 	if [ "$opts" = "" ]; then
@@ -442,3 +481,6 @@ rm list-gen.txt list-unq.txt .temp-filesTested.txt
 if [ ! -e .localCommandUsed ]; then
 	rm -rf commands "$_COMMAND_TEST"
 fi
+
+# Change comments in this file so markers reflect configuration.
+./config/mark-data-test.sh "$_COMMAND_TEST" "$_sourceUserName" "$_pullUserName"

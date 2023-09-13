@@ -10,6 +10,8 @@
 ### license specified in that reposityor.              ###
 ##########################################################
 
+### 1. SET CONFIGURATION AND READY DATA TO BE EXTRACTED. ##################################################################
+###########################################################################################################################
 # Set variables from config-variables.sh. 
 # IMPORTANT - these should have been changed after making repo from template.
 # IMPORTANT - you must agree to terms before use.
@@ -27,6 +29,9 @@ mkdir -p data/extract data/full-test 2>/dev/null
 # Directory where repos will be cloned, extracted, then deleted.
 _startingDir="data/extract" # clone and extract here
 
+
+### 2. DETERMINE, THEN CLONE REPOSITORIES FROM CONFIGURATION. #############################################################
+###########################################################################################################################
 # Function check for exract file if cloning from GitHub turned off.
 function get_extract_path() {
   _curRepo=$1
@@ -82,6 +87,10 @@ function process_directory() {
 	if [ $_runCloneOrCopyForExtract = 1 ]; then
 		_clone_or_copy_for_extract
 	fi
+
+
+### 3. EXTRACT FILES MATCHING CONFIGURED EXTENSIONS IN ` CONFIG-VARIABLES.SH ` TO DATA/FULL-TEST DIRECTORY. ###############
+###########################################################################################################################
 	# loop and extract files matching extension or recurse
     for entry in "$dir"/*; do
 		# check that max size has not been reached
@@ -107,6 +116,9 @@ function process_directory() {
     done
 }
 
+
+### 4. PROMPT TO CONFIRM THEN RUN FUNCTION TO EXTRACT DATA.	 ##############################################################
+###########################################################################################################################
 # Alert on long script runtime.
 echo Script has begun recursing. 
 echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#  && echo 
