@@ -20,11 +20,11 @@ CHANGE_FILE_LIST
 4. Set a start and end time for each build with CHANGE_COMMAND_TEST, pushing start and end to two separate arrays.
 5. In ` run_command() ` sub-function call CHANGE_COMMAND_TEST first utilizing prior configurations to build using source or pull CHANGE_COMMAND_TEST and calculate build time(s).
    - Additional marker here cause this is where CHANGE_COMMAND_TEST is called and timed.
-7. Determnin difference after all files built second in `runc_command() sub-function.
-8. Call ` run_command() ` sub-function.
-9. Determine if there is a difference, checking empty files and count number of differences.
-10. Call ` run_test() ` function with source or pull, reconfigure and call ` run_test() ` again.
-11. Make support html elements for difference output and dropdown menus.
-12. Compare total fies built to files with differences, outputting results to supporting text file.
-13. Calculate stats for build times, outputting results to supporting text file.
-14. Make remaining support html elements and clean files and directories.
+6. Determnin difference after all files built second in `runc_command() sub-function.
+7. Call ` run_command() ` sub-function.
+8. Determine if there is a difference, checking empty files and count number of differences.
+9. Call ` run_test() ` function with source or pull, reconfigure and call ` run_test() ` again.
+10. Make support html elements for difference output and dropdown menus.
+11. Compare total fies built to files with differences, outputting results to supporting text file.
+12. Calculate stats for build times, outputting results to supporting text file.
+13. Make remaining support html elements and clean files and directories.
