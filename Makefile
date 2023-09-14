@@ -7,9 +7,9 @@
 .PHONY: check-mac reset.folder
 
 check-mac:
-	@if [ -e MAC-ME ]; then \
-		./MAC-ME; \
-		mv MAC-ME .MAC-ME; \
+	@if [ -e MAC-OS ]; then \
+		./MAC-OS; \
+		mv MAC-OS .MAC-OS; \
 	fi
 
 reset.folder:
@@ -19,7 +19,7 @@ reset.folder:
 		cp -f config-variables.sh reset/config-variables.sh; \
 	fi
 
-all: check-mac reset.folder
+full: check-mac reset.folder
 	@./extract-full-data.sh
 	@./data-test 1
 

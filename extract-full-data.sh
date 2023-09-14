@@ -129,7 +129,7 @@ function process_directory() {
 # Alert on long script runtime.
 echo Script has begun recursing. 
 echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#  && echo 
-echo This may take a while. Est. time - 10 minutes.
+echo This may take a while. Est. time - 15 minutes.
 echo Continue \[Y/n\]: && echo 
 # User response to confirm or not functionrun.
 read -r _response
