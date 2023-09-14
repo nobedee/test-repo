@@ -43,13 +43,19 @@
    dataCheck[ind].dataset.check = "0"; 
    dataCheck[ind].previousElementSibling.removeAttribute("checked"); 
   } else {
-   if (ind == "a") {
+/*   if (ind == "a") {    
     dataNestCheck[1].dataset.nestCheck = "0";
     dataNestCheck[1].dataset.showhide = "0";
    } else {
     dataNestCheck[0].dataset.nestCheck = "0";
-    dataNestCheck[0].dataset.showhide = "0";
-   }
+    dataNestCheck[0].dataset.showhide = "0";    
+   }*/
+    for (i = 0; i < dataNestCheck.length; i++) {
+     if (i.toString() != ind) {
+      dataNestCheck[i].dataset.nestCheck = "0";
+      dataNestCheck[i].dataset.showhide = "0";   
+     }
+    }
   }
  };
  // Subtle repo switch indicator.
@@ -108,20 +114,23 @@
   let dropLiLen = dropLi.length;
   let optUsed, textToArr, textToArrLen;
   let optHttp = new XMLHttpRequest();
+
   optHttp.onreadystatechange = function() {
    if (this.readyState == 4 && this.status == 200) {
     optUsed = this.responseText;
     textToArr = optUsed.split("\n");     
     textToArrLen = textToArr.length;
     for (i = 0; i < dropLiLen; i++) {
-     let dropDiv = dropLi[i].getElementsByTagName("div");
+     let dropDiv = dropLi[i].getElementsByClassName("dropdown");
      for (ii = 0; ii < textToArrLen; ii++) {
       if (textToArr[ii] != "") {
        dropDiv[0].innerHTML += '     <div>\n' +
-        '      <span class="pageDrop" data-nest-check="0" onclick="changeNextElementDisplay(this, this.nextElementSibling); resetDropDowns(this, this.dataset.nestCheck);">' +
+        '      <span class="pageDrop" data-nest-check="0" onclick="changeNextElementDisplay(this, \n' + 
+        '       this.nextElementSibling); resetDropDowns(this, this.dataset.nestCheck, this.dataset.optIndex);" \n' +
+        '       data-opt-index="'+ii+'">' +
         textToArr[ii] + '</span>\n' +
         '      <div class="dropdown nestedDropdown" style="display:none"></div>\n' +
-        '     </div>';
+        '     </div><br>';
        }
      }
     }     
@@ -133,7 +142,7 @@
  commandOptionDropdown("support/options-ran.txt");  
 
  // Show and hide nested dropdowns.
- function resetDropDowns(cur, curStatus) {
+ function resetDropDowns(cur, curStatus, optIndex) {
   let curnestedDropdown = cur.nextElementSibling;
   let curData = cur.dataset;   
   let theCurStatus = curStatus;
@@ -161,11 +170,12 @@
    let theParent = cur.parentElement;
    let theGrandparent = theParent.parentElement;
    dataNestCheck = theGrandparent.querySelectorAll("[data-nest-check]");
-   if (theParent.nextElementSibling == null) {
+   /*if (theParent.nextElementSibling == null) {
     toggleDataCheck("b");
    } else {
     toggleDataCheck("a");
-   }
+   }*/
+   toggleDataCheck(optIndex.toString());
    // Show the nested dropdown clicked.
    if (cur.dataset.showhide == "1") {
     cur.dataset.nestCheck = "1";
@@ -209,12 +219,12 @@
         curNestedDropdown.innerHTML += "<li><a target='_blank' href='" +
          "https://jhauga.github.io/htmlpreview.github.com/?" + cur_test_results +
          nestDropArr[i][ii].replace("COMMAND_USED", "source") + "'>" +          
-         nestDropArr[i][ii].substring(nestDropArr[i][ii].lastIndexOf("/")+1, nestDropArr[i][ii].indexOf("-")) +
+         nestDropArr[i][ii].substring(nestDropArr[i][ii].lastIndexOf("/")+1, nestDropArr[i][ii].indexOf("-COMMAND_USED")) +
          "</a></li><br>";
         } else {
         curNestedDropdown.innerHTML += "<li><a target='_blank' href='" +
          nestDropArr[i][ii].replace("COMMAND_USED", "source") + "'>" +          
-         nestDropArr[i][ii].substring(nestDropArr[i][ii].lastIndexOf("/")+1, nestDropArr[i][ii].indexOf("-")) +
+         nestDropArr[i][ii].substring(nestDropArr[i][ii].lastIndexOf("/")+1, nestDropArr[i][ii].indexOf("-COMMAND_USED")) +
          "</a></li><br>";
        }
       }

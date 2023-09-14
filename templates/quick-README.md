@@ -20,7 +20,7 @@ CHANGE_FILE_LIST
 4. Set a start and end time for each build with CHANGE_COMMAND_TEST, pushing start and end to two separate arrays.
 5. In ` run_command() ` sub-function call CHANGE_COMMAND_TEST first utilizing prior configurations to build using source or pull CHANGE_COMMAND_TEST and calculate build time(s).
    - Additional marker here cause this is where CHANGE_COMMAND_TEST is called and timed.
-6. Determnin difference after all files built second in `runc_command() sub-function.
+6. Determine difference after all files built second in `runc_command() sub-function.
 7. Call ` run_command() ` sub-function.
 8. Determine if there is a difference, checking empty files and count number of differences.
 9. Call ` run_test() ` function with source or pull, reconfigure and call ` run_test() ` again.

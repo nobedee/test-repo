@@ -92,6 +92,7 @@ function process_directory() {
 ### 3. EXTRACT FILES MATCHING CONFIGURED EXTENSIONS IN ` CONFIG-VARIABLES.SH ` TO DATA/FULL-TEST DIRECTORY. ###############
 ###########################################################################################################################
 	# loop and extract files matching extension or recurse
+	_duplicateCount=1 # for duplicate files in repos
     for entry in "$dir"/*; do
 		# check that max size has not been reached
 		check_file_size "$_outPutDir/$_curRepo" # calls both
@@ -105,12 +106,17 @@ function process_directory() {
             for ext in "${_fileExtensions[@]}"; do
 				# if a match move to data/full-test/[gen | unq]
                 if [[ "$entry" == *"$ext" ]]; then
-                    cp "$entry" "$_outPutDir/$_curRepo"    # copy
+					if [ -e "$_outPutDir/$_curRepo/$entry" ]; then
+						cp "$entry" "$_outPutDir/$_curRepo/$entry-$_user-$_repo-$_duplicateCount" 2>/dev/null # duplicate file names
+					else
+						cp "$entry" "$_outPutDir/$_curRepo"    # copy files
+					fi
                     echo "Copied: $entry"                  # stdout copied
                     break                                  # end ext. loop
                 fi
             done
         elif [ -d "$entry" ]; then # recurse
+			_duplicateCount=$(( _duplicateCount + 1 ))
             process_directory "$entry" "0" "0"
         fi
     done

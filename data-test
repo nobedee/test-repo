@@ -83,11 +83,15 @@ function run_test() {
 	if [ "$_useSource" = 1 ]; then
 		_file="source"
 		# copy to root of testing repo
-		cp commands/"$_sourceUserName"-"$_COMMAND_TEST"/"$_COMMAND_TEST" "$_COMMAND_TEST"
+		if [ $_toTestRoot = 1 ]; then
+			cp commands/"$_sourceUserName"-"$_COMMAND_TEST"/"$_COMMAND_TEST" "$_COMMAND_TEST"
+		fi
 	else
 		_file="pull"
 		# copy to root of testing repo
-		cp commands/"$_pullUserName"-"$_COMMAND_TEST"/"$_COMMAND_TEST" "$_COMMAND_TEST"
+		if [ $_toTestRoot = 1 ]; then
+			cp commands/"$_pullUserName"-"$_COMMAND_TEST"/"$_COMMAND_TEST" "$_COMMAND_TEST"
+		fi
 	fi
 
 
@@ -128,20 +132,22 @@ function run_test() {
 				_nameOpt="$opts"
 			fi
 			if [ "$_targetFileExtension" == ".html" ]; then
+				echo "Command building with $1 $_COMMAND_TEST $opts :"
 				# start start time, run build command, and calculate run time storing it in array
 				calc_build "1" && _commandSyntax "$opts" data/"$_curDir"/"$line" tests/"$_curData"/"$line"-"$1""$_nameOpt".html && calc_build "2"
 			else
+				echo "Command building with $1 $_COMMAND_TEST $opts :"
 				echo "<!DOCTYPE HTML><html><body><pre>" > tests/"$_curData"/"$line"-"$1""$_nameOpt".html # make html opening elements
 				# start start time, run build command, and calculate run time storing it in array
 				calc_build "1" && _commandSyntax "$opts" data/"$_curDir"/"$line" tests/"$_curData"/"$line"-"$1""$_nameOpt".html && calc_build "2"
-				echo "</pre></body></html>" >> tests/"$_curData"/"$line"-"$1""$_nameOpt".html # make html closing elements				
+				echo "</pre></body></html>" >> tests/"$_curData"/"$line"-"$1""$_nameOpt".html # make html closing elements					
 			fi
 			# increase the number of files built
 			(( _numberOfFilesBuilt++ ))
 		done
 
 
-### 6. DETERMNIN DIFFERENCE AFTER ALL FILES BUILT SECOND IN `RUNC_COMMAND() SUB-FUNCTION. ###################################
+### 6. DETERMINE DIFFERENCE AFTER ALL FILES BUILT SECOND IN `RUNC_COMMAND() SUB-FUNCTION. ###################################
 #############################################################################################################################		
 		# loop through options that created files and check for differences in 
 		# source and pull differences in created files
@@ -425,6 +431,7 @@ done
 echo "${_COMMAND_TEST^}" > support/COMMAND-USED.txt
 
 # Change README.md to show test results.
+cp README.md INSTRUCTIONS.md 2>/dev/null
 if [ $_currentTest = "quick-test" ]; then
 	cp templates/quick-README.md README.md 2>/dev/null
 	# Make list of files tested.
@@ -478,7 +485,7 @@ sed -i -E 's/([-]+)(.*)/\2/g' support/options-ran.txt
 rm list-gen.txt list-unq.txt .temp-filesTested.txt
 
 # Remove command as no longer needed.
-if [ ! -e .localCommandUsed ]; then
+if [ ! -e .localCommandUsed ] || [ $_toTestRoot = 1 ]; then
 	rm -rf commands "$_COMMAND_TEST"
 fi
 

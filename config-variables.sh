@@ -48,23 +48,27 @@ _acknowledgeAndAgreeToUSAGE_AGREEMENT=0
 # ------------------                                                   #
 # Name of new repository for tests result.                             #
 ########################################################################
-_testResultRepo="command-test" 
+_testResultRepo="command-test"
 
-# II. CHANGE CONFIG VARIABLES ###################################################################################
-_COMMAND_TEST="command"  # command ------ the command/script that will run                                      #  
-_sourceUserName="source" # source ------- user that the repo was forked from                                    #    
-_pullUserName="pull"     # pull --------- user with fork and making pull request                                #        
-_repoName="command-repo" # command-repo - the repo where command is stored for clone                            #            
-_useSource=1             # use source - Start off using source user's command                                   #     
-_cloneRepo=1             # clone repo - 1 to clone from github, 0 to use local                                  #      
-                         #  IMPORTANT - if 0 then place files in directory                                      #   
-						 #             "commands/$_sourceUserName-$)COMMAND_TEST" &                             #           
-						 #             "commands/$_pullUserName-$)COMMAND_TEST" manually.                       #                 
-_cloneExtract=1          # clone extract - 1 to clone from github, 0 to use local                               #         
-                         #     IMPORTANT - if 0 then place files in directory                                   #      
-						 #             "data/extract/repo_name" where repo_name is name of repository &         #                               
-						 #             "data/extract/repo_name" where repo_name is name of repository manually.	#	                                        				   
-                         ########################################################################################
+# II. CHANGE CONFIG VARIABLES ########################################################################################
+_COMMAND_TEST="command"       # command ------ the command/script that will run                                      #  
+_sourceUserName="source"      # source ------- user that the repo was forked from                                    #    
+_pullUserName="pull"          # pull --------- user with fork and making pull request                                #        
+_repoName="repo-name"         # repo name    - the repo where command is stored for clone                            #
+_toTestRoot=1                 # to test root - copies the command to test root for use, else command used in clone   # 
+_exec="bin/$_COMMAND_TEST"    # exec       - path to executable for test.                                            #
+                              #  IMPORTANT - only needs changing if "_toTestRoot" is 0                               #
+                              #  IMPORTANT - if executable name is different, then remove variable and change name   #
+_useSource=1                  # use source - Start off using source user's command                                   #     
+_cloneRepo=1                  # clone repo - 1 to clone from github, 0 to use local                                  #      
+                              #  IMPORTANT - if 0 then place files in directory                                      #   
+						      #             "commands/$_sourceUserName-$)COMMAND_TEST" &                             #           
+						      #             "commands/$_pullUserName-$)COMMAND_TEST" manually.                       #                 
+_cloneExtract=1               # clone extract - 1 to clone from github, 0 to use local                               #         
+                              #     IMPORTANT - if 0 then place files in directory                                   #      
+						      #             "data/extract/repo_name" where repo_name is name of repository &         #                               
+						      #             "data/extract/repo_name" where repo_name is name of repository manually. #	                                        				   
+                              ########################################################################################
 						 
 # III. DEFINE OPTIONS USED #############################################
 # ------------------------                                             #
@@ -105,15 +109,36 @@ _unqUser="userC"
 # Note - keep variables, and note that $opts is for each option in array.         #                          
 # Note - data/"$_curDir"/"$line" - is the input file                              #     
 # Note - tests/"$_curData"/"$line"-"$1""$_nameOpt".html - will be output file     #
+# IMPORTANT - this configuration assumes you intermediate scripting knowledge.    #
 ###################################################################################
-function _commandSyntax() { 
+function _commandSyntax() {
   ###################################################################
   # IMPORTANT - do not change elements. only how command is called. #
-  #             If needed edit data-test file.  104 an 107.         #
+  #             If needed edit data-test file.  136 and 140.        #
   ###################################################################
-  
+  # option      # file to change   # file that is changed
   _opt="$1" && _inputFile="$2" && _outputFile="$3"
-  ./$_COMMAND_TEST "$_opt" < "$_inputFile" > "$_outputFile"
+  
+  if [ $_toTestRoot = 1 ]; then
+	# DO NOT CHANGE - variables (well remove "<" and ">" if needed).
+	# BUT REARRANGE - varibales per command syntax. This is configurred for roffit.
+	./$_COMMAND_TEST "$_opt" < "$_inputFile" > "$_outputFile"
+  else
+	# DO NOT CHANGE - variables - changed in data-test.
+	#    IMPORATANT - if needed make changes in "data-test".
+	# BUT REARRANGE - pending on how syntax of command is used.
+	# AND MAKE IF CHANGE - some uses require custom syntax per option. Below is configurred to asciidoctor.
+	if [ "$_opt" = "" ]; then
+		commands/"$_curGitHubUser"-"$_COMMAND_TEST"/"$_exec" "$_inputFile"
+		_moveHTML="${_inputFile%.*}$_targetFileExtension" && mv "$_moveHTML" "$_outputFile"
+	elif [ "$_opt" = "-D" ]; then
+		_moveHTML="${_outputFile%/*}" && _inputFileName="${_inputFile##*/}" && _outputFileName="${_inputFileName%.*}.html"
+		commands/"$_curGitHubUser"-"$_COMMAND_TEST"/"$_exec" "$_opt" "$_moveHTML" "$_inputFile"
+		_renameHTML="$_moveHTML/${_inputFileName%.*}$_targetFileExtension" && mv "$_renameHTML" "$_outputFile"
+	elif [ "$_opt" = "-o" ]; then
+		commands/"$_curGitHubUser"-"$_COMMAND_TEST"/"$_exec" "$_opt" "$_outputFile" "$_inputFile"
+	fi
+  fi
 
   # EXAMPLE: #######################################
   # command opts inputfile > output file           #        
@@ -131,7 +156,7 @@ function _commandSyntax() {
 # ==============
 
 # SECONDS - Max number of seconds each command has to run test.
-_max_run_time=120
+_max_run_time=300
 # MB - Max size the test can build with both commands.
 _max_test_size=20
 

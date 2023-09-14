@@ -28,7 +28,11 @@ quick: check-mac reset.folder
 	
 # Ready made test. See "Ready Made Tests" in README.md
 roffit: ask.clone check-mac reset.folder	
-	@./data/ready/config-prompt.sh "roffit"
+	@./data/ready/config-prompt.sh "roffit" # roffit
+	
+# Ready made test. See "Ready Made Tests" in README.md
+asciidoctor: ask.clone check-mac reset.folder
+	@./data/ready/config-prompt.sh "asciidoctor" # asciidoctor
 
 # Ask if cloning from GithHub.
 ask.clone:
