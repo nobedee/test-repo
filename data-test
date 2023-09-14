@@ -58,12 +58,12 @@ mkdir -p diff/unq diff/err diff/gen tests/unq tests/err tests/gen
 ###########################################################################################################################
 # Get source and pulled command file from github.
 function _git_clone_repo() {
-	_curGitHubUser="$1"
-	git clone https://github.com/$_curGitHubUser/$_repoName.git commands/"$_curGitHubUser"-"$_COMMAND_TEST"/
+  _curGitHubUser="$1"
+  git clone https://github.com/$_curGitHubUser/$_repoName.git commands/"$_curGitHubUser"-"$_COMMAND_TEST"/
 }
 # Make the dir to compare source and pull command.
 if [ "$_cloneRepo" = "1" ]; then
-	_git_clone_repo "$_sourceUserName" && _git_clone_repo "$_pullUserName"
+  _git_clone_repo "$_sourceUserName" && _git_clone_repo "$_pullUserName"
 fi
 
 
@@ -77,159 +77,161 @@ declare -a _runTimes && declare -a _sourceRuns && declare -a _pullRuns
 # to test the differnences to ensure nothing new
 # was broken as a result of pull request.
 function run_test() {
-	# set list to use
-	_curList="$1" && _curData="$2" && _curDir="$_currentTest"/"$_curData"
-	# set which coomand to use; source or pull
-	if [ "$_useSource" = 1 ]; then
-		_file="source"
-		# copy to root of testing repo
-		if [ $_toTestRoot = 1 ]; then
-			cp commands/"$_sourceUserName"-"$_COMMAND_TEST"/"$_COMMAND_TEST" "$_COMMAND_TEST"
-		fi
-	else
-		_file="pull"
-		# copy to root of testing repo
-		if [ $_toTestRoot = 1 ]; then
-			cp commands/"$_pullUserName"-"$_COMMAND_TEST"/"$_COMMAND_TEST" "$_COMMAND_TEST"
-		fi
-	fi
+  # set list to use
+  _curList="$1" && _curData="$2" && _curDir="$_currentTest"/"$_curData"
+  # set which coomand to use; source or pull
+  if [ "$_useSource" = 1 ]; then
+    _file="source"
+    # copy to root of testing repo
+    if [ $_toTestRoot = 1 ]; then
+      cp commands/"$_sourceUserName"-"$_COMMAND_TEST"/"$_COMMAND_TEST" "$_COMMAND_TEST"
+    fi
+  else
+    _file="pull"
+    # copy to root of testing repo
+    if [ $_toTestRoot = 1 ]; then
+      cp commands/"$_pullUserName"-"$_COMMAND_TEST"/"$_COMMAND_TEST" "$_COMMAND_TEST"
+    fi
+  fi
 
 
 ### 4. SET A START AND END TIME FOR EACH BUILD WITH -CHANGE_COMMAND-, PUSHING START AND END TO TWO SEPARATE ARRAYS. 
 ###########################################################################################################################	
-	# repetitive function to get time for each build
-	calc_build() {
-		# set starting point before making file
-		if [ "$1" = 1 ]; then
-			start_one_run="$(date +%s.%N)" # set start time mark
-		elif [ "$1" = 2 ]; then
-			# set end time mark
-			end_one_run="$(date +%s.%N)"
-			# get time difference
-			_oneRun=$(echo "$end_one_run - $start_one_run" | bc)
-			# append to correct array by either source or pull command
-			# that is specified in config variab le "_useSource" at top
-			if [ "$_file" = "source" ]; then
-				(( _numberOfSourceFilesBuilt++ ))
-				_sourceRuns+=("$_oneRun")
-			else
-				(( _numberOfPullFilesBuilt++ ))
-				_pullRuns+=("$_oneRun")
-			fi
-		fi
-	}
+  # repetitive function to get time for each build
+  calc_build() {
+    # set starting point before making file
+    if [ "$1" = 1 ]; then
+      start_one_run="$(date +%s.%N)" # set start time mark
+    elif [ "$1" = 2 ]; then
+      # set end time mark
+      end_one_run="$(date +%s.%N)"
+      # get time difference
+      _oneRun=$(echo "$end_one_run - $start_one_run" | bc)
+      # append to correct array by either source or pull command
+      # that is specified in config variab le "_useSource" at top
+      if [ "$_file" = "source" ]; then
+        (( _numberOfSourceFilesBuilt++ ))
+        _sourceRuns+=("$_oneRun")
+      else
+        (( _numberOfPullFilesBuilt++ ))
+        _pullRuns+=("$_oneRun")
+      fi
+    fi
+  }
 
 
 ### 5. IN ` RUN_COMMAND() ` SUB-FUNCTION CALL -CHANGE_COMMAND- TO BUILD WITH -S_U- AND -P_U- AND CALCULATE BUILD TIME(S). 
 #############################################################################################################################
-	# repetitive function to make files
-	run_command() {
-		# loop through options specified to run command with
-		for opts in "${_optionsToRun[@]}"; do
-			if [ "$opts" == "" ]; then
-				_nameOpt="-default"
-			else
-				_nameOpt="$opts"
-			fi
-			if [ "$_targetFileExtension" == ".html" ]; then
-				echo "Command building with $1 $_COMMAND_TEST $opts :"
-				# start start time, run build command, and calculate run time storing it in array
-				calc_build "1" && _commandSyntax "$opts" data/"$_curDir"/"$line" tests/"$_curData"/"$line"-"$1""$_nameOpt".html && calc_build "2"
-			else
-				echo "Command building with $1 $_COMMAND_TEST $opts :"
-				echo "<!DOCTYPE HTML><html><body><pre>" > tests/"$_curData"/"$line"-"$1""$_nameOpt".html # make html opening elements
-				# start start time, run build command, and calculate run time storing it in array
-				calc_build "1" && _commandSyntax "$opts" data/"$_curDir"/"$line" tests/"$_curData"/"$line"-"$1""$_nameOpt".html && calc_build "2"
-				echo "</pre></body></html>" >> tests/"$_curData"/"$line"-"$1""$_nameOpt".html # make html closing elements					
-			fi
-			# increase the number of files built
-			(( _numberOfFilesBuilt++ ))
-		done
+  # repetitive function to make files
+  run_command() {
+    # loop through options specified to run command with
+    for opts in "${_optionsToRun[@]}"; do
+      if [ "$opts" == "" ]; then
+        _nameOpt="-default"
+      else
+        _nameOpt="$opts"
+      fi
+      if [ "$_targetFileExtension" == ".html" ]; then
+        echo "Command building with $1 $_COMMAND_TEST $opts :"
+        # start start time, run build command, and calculate run time storing it in array
+        calc_build "1" && _commandSyntax "$opts" data/"$_curDir"/"$line" tests/"$_curData"/"$line"-"$1""$_nameOpt".html && calc_build "2"
+      else
+        echo "Command building with $1 $_COMMAND_TEST $opts :"
+        echo "<!DOCTYPE HTML><html><body><pre>" > tests/"$_curData"/"$line"-"$1""$_nameOpt".html # make html opening elements
+        # start start time, run build command, and calculate run time storing it in array
+        calc_build "1" && _commandSyntax "$opts" data/"$_curDir"/"$line" tests/"$_curData"/"$line"-"$1""$_nameOpt".html && calc_build "2"
+        echo "</pre></body></html>" >> tests/"$_curData"/"$line"-"$1""$_nameOpt".html # make html closing elements					
+      fi
+      # increase the number of files built
+      (( _numberOfFilesBuilt++ ))
+    done
 
 
 ### 6. DETERMINE DIFFERENCE AFTER ALL FILES BUILT SECOND IN `RUNC_COMMAND() SUB-FUNCTION. ###################################
 #############################################################################################################################		
-		# loop through options that created files and check for differences in 
-		# source and pull differences in created files
-		for opts in "${_optionsToRun[@]}"; do
-			if [ "$opts" = "" ]; then
-				opts="-default"
-			fi
-			# compare the built files
-			if [ "$1" = "source" ]; then
-				_invertRepo="pull"
-			else
-				_invertRepo="source"
-			fi
-			# if file has been built
-			if [ -e "tests/$_curData/$line-$_invertRepo$opts.html" ]; then
-				# difference based on arguments setting variables.
-				if ! diff -q tests/"$_curData"/"$line"-"$_invertRepo""$opts".html tests/"$_curData"/"$line"-"$1""$opts".html >/dev/null; then
-					$_diffCommand tests/"$_curData"/"$line"-"$_invertRepo""$opts".html tests/"$_curData"/"$line"-"$1""$opts".html > diff/"$_curData"/"$line""$opts".txt
-				fi
-			fi
-		done
-		check_max_run_time
-		if [ $_closeOutTest = 1 ]; then
-			echo MAX TIME
-			_maxTimeWasReached=1
-			_breakOutOfTest=1
-			return
-		fi
-		# check that max time is not reached
-		check_max_test_size "check"
-		if [ $_closeOutTest = 1 ]; then
-			echo MAX SIZE
-			_maxSizeWasReached=1
-			_breakOutOfTestSize=1
-			return
-		fi		
-	}
+    # loop through options that created files and check for differences in 
+    # source and pull differences in created files
+    for opts in "${_optionsToRun[@]}"; do
+      if [ "$opts" = "" ]; then
+        opts="-default"
+      fi
+      # compare the built files
+      if [ "$1" = "source" ]; then
+        _invertRepo="pull"
+      else
+        _invertRepo="source"
+      fi
+      # if file has been built
+      if [ -e "tests/$_curData/$line-$_invertRepo$opts.html" ]; then
+        # difference based on arguments setting variables.
+        if ! diff -q tests/"$_curData"/"$line"-"$_invertRepo""$opts".html tests/"$_curData"/"$line"-"$1""$opts".html >/dev/null; then
+          $_diffCommand tests/"$_curData"/"$line"-"$_invertRepo""$opts".html tests/"$_curData"/"$line"-"$1""$opts".html > diff/"$_curData"/"$line""$opts".txt
+        fi
+      fi
+    done
+    check_max_run_time
+    if [ $_closeOutTest = 1 ]; then
+      echo MAX TIME
+      _maxTimeWasReached=1
+      _breakOutOfTest=1
+      return
+    fi
+    # check that max time is not reached
+    check_max_test_size "check"
+    if [ $_closeOutTest = 1 ]; then
+      echo MAX SIZE
+      _maxSizeWasReached=1
+      _breakOutOfTestSize=1
+      return
+    fi		
+  }
 
 
 ### 7. CALL ` RUN_COMMAND() ` SUB-FUNCTION. #################################################################################
 #############################################################################################################################			
-	# make files by command being used using repetitive functions above
-	# file naming will be [file_name]-[source|pull]-[""|"${opt[x]}"].html
-	while read -r line; do
-		# end if max time has been reached
-		if [ $_breakOutOfTest = 1 ] || [ $_breakOutOfTestSize = 1 ]; then
-			break
-		else		
-			# increase count of files that were tested (files in data/[full|quick]-test folder(s)
-			(( _numberOfFilesTested++ ))
-			if [ "$_useSource" = 1 ]; then
-				# run using source command
-				run_command "source"
-			else
-				# run using pull command
-				run_command "pull"
-			fi
-		fi
-		   # loop through files listed in list-[gen|unq].txt file
-	done < "$_curList"
+  # make files by command being used using repetitive functions above
+  # file naming will be [file_name]-[source|pull]-[""|"${opt[x]}"].html
+  while read -r line; do
+    # end if max time has been reached
+    if [ $_breakOutOfTest = 1 ] || [ $_breakOutOfTestSize = 1 ]; then
+      break
+    else		
+      # increase count of files that were tested (files in data/[full|quick]-test folder(s)
+      (( _numberOfFilesTested++ ))
+      if [ "$_useSource" = 1 ]; then
+        # run using source command
+        _curUser="$_sourceUserName"
+        run_command "source"
+      else
+        # run using pull command
+        _curUser="$_pullUserName"
+        run_command "pull"
+      fi
+    fi
+    # loop through files listed in list-[gen|unq].txt file
+  done < "$_curList"
 
 
 ### 8. DETERMINE IF THERE IS A DIFFERENCE, CHECKING EMPTY FILES AND COUNT NUMBER OF DIFFERENCES. ############################
 #############################################################################################################################
-	# move files with differences to errors
-	while read -r line; do
-		# for all options check files created by command
-		for opts in "${_optionsToRun[@]}"; do
-			# account for no option
-			if [ "$opts" = "" ]; then
-				opts="-default"
-			fi
-			# ensure differnces by seeing if file is NOT empty
-			if [ -s diff/"$_curData"/"$line""$opts".txt ]; then
-				mv diff/"$_curData"/"$line""$opts".txt diff/err/"$line""$opts".txt 2>/dev/null
-				mv tests/"$_curData"/"$line"*"$opts".html tests/err/ 2>/dev/null
-				# increase the number of errors
-				(( _countNumberOfErrors++ ))
-			fi
-		done
-		  # loop through files listed in list-[gen|unq].txt file
-	done < "$_curList"
+  # move files with differences to errors
+  while read -r line; do
+    # for all options check files created by command
+    for opts in "${_optionsToRun[@]}"; do
+      # account for no option
+      if [ "$opts" = "" ]; then
+        opts="-default"
+      fi
+      # ensure differnces by seeing if file is NOT empty
+      if [ -s diff/"$_curData"/"$line""$opts".txt ]; then
+        mv diff/"$_curData"/"$line""$opts".txt diff/err/"$line""$opts".txt 2>/dev/null
+        mv tests/"$_curData"/"$line"*"$opts".html tests/err/ 2>/dev/null
+        # increase the number of errors
+        (( _countNumberOfErrors++ ))
+      fi
+    done
+          # loop through files listed in list-[gen|unq].txt file
+  done < "$_curList"
 }
 
 
@@ -254,16 +256,16 @@ run_test "list-unq.txt" "unq"
 
 # Check if either source or pull went over max time.
 if [ $_maxTimeWasReached = 1 ]; then
-	_generateTimeErrorMessage=1
+  _generateTimeErrorMessage=1
 else
-	_generateTimeErrorMessage=0
-	_numberOfFilesTested=$(( ($_numberOfFilesTested / 2) ))
+  _generateTimeErrorMessage=0
+  _numberOfFilesTested=$(( ($_numberOfFilesTested / 2) ))
 fi
 # Check if either source or pull went over max size.
 if [ $_maxSizeWasReached = 1 ]; then
-	_generateSizeErrorMessage=1
+  _generateSizeErrorMessage=1
 else
-	_generateSizeErrorMessage=0	
+  _generateSizeErrorMessage=0	
 fi
 
 
@@ -285,9 +287,9 @@ touch diff/errs.txt
 
 # Change script variable for default diff command use if not "diff"
 if [ "$_diffCommand" = "diff" ]; then
-	sed -i "s|var diffDefault=.|var diffDefault=1|" scripts.js
+  sed -i "s|var diffDefault=.|var diffDefault=1|" scripts.js
 else
-	sed -i "s|var diffDefault=.|var diffDefault=0|" scripts.js
+  sed -i "s|var diffDefault=.|var diffDefault=0|" scripts.js
 fi
 
 
@@ -296,14 +298,14 @@ fi
 # Loop through diff file and output files' terminal output to html and count number built.
 _builtFilesWithDifferences=0
 while read -r line; do
-	# header for file name
-	echo "---h3-data-conversion-test_tag---${line##*/}---c-h3-data-conversion-test_tag---" >> diff/errs.txt	
-	# file contents
-	cat "$line" >> diff/errs.txt
-	# add space and separation marker
-	echo "---br_hr_br-data-conversion-test_tag---" >> diff/errs.txt
-	# increment built files with differences
-	(( _builtFilesWithDifferences++ ))
+  # header for file name
+  echo "---h3-data-conversion-test_tag---${line##*/}---c-h3-data-conversion-test_tag---" >> diff/errs.txt	
+  # file contents
+  cat "$line" >> diff/errs.txt
+  # add space and separation marker
+  echo "---br_hr_br-data-conversion-test_tag---" >> diff/errs.txt
+  # increment built files with differences
+  (( _builtFilesWithDifferences++ ))
 done < diff/errList.txt
 # Account for source and pull
 (( _builtFilesWithDifferences*="$_numberOfOptionsRan" ))
@@ -322,15 +324,15 @@ _percentOfFilesWithDifferences=$(( (_countNumberOfErrors /_numberOfOptionsRan) )
 # Edit copied template file for output differences. Comment at end correspond to comment in template file.
 # Show time error message.
 if [ $_generateTimeErrorMessage = 1 ]; then
-	sed -i "s|_GENERATE-TIME-ERRORMESSAGE|block|" support/diff-stats.txt # time error message
+  sed -i "s|_GENERATE-TIME-ERRORMESSAGE|block|" support/diff-stats.txt # time error message
 else
-	sed -i "s|_GENERATE-TIME-ERRORMESSAGE|none|" support/diff-stats.txt # time error message
+  sed -i "s|_GENERATE-TIME-ERRORMESSAGE|none|" support/diff-stats.txt # time error message
 fi
 # Show size error message.
 if [ $_generateSizeErrorMessage = 1 ]; then
-	sed -i "s|_GENERATE-SIZE-ERRORMESSAGE|block|" support/diff-stats.txt # size error message
+  sed -i "s|_GENERATE-SIZE-ERRORMESSAGE|block|" support/diff-stats.txt # size error message
 else
-	sed -i "s|_GENERATE-SIZE-ERRORMESSAGE|none|" support/diff-stats.txt # size error message
+  sed -i "s|_GENERATE-SIZE-ERRORMESSAGE|none|" support/diff-stats.txt # size error message
 fi
 
 
@@ -350,19 +352,19 @@ cp templates/run-times.html support/run-times.txt
 
 # Function to calculate basic run time stats.
 calc_run_average() {
-	cur_arr=("$@")           # array as parameter
-	cur_sum=0                # start count at 0
-	cur_len=${#cur_arr[@]}   # array length
-	for num in "${cur_arr[@]}"; do
-		# sum up all the time amounts to build file
-		cur_sum=$(echo "scale=6; $cur_sum + $num" | bc)
-	done
-	# get average of summed build times
-	cur_average=$(echo "scale=6; $cur_sum / $cur_len" | bc)
-	# append array witb source and pull command's sums respectively
-	_sumRuns+=("$cur_sum")
-	# append array with source and pull command's averages respectively
-	_averageRunTimes+=("$cur_average")
+  cur_arr=("$@")           # array as parameter
+  cur_sum=0                # start count at 0
+  cur_len=${#cur_arr[@]}   # array length
+  for num in "${cur_arr[@]}"; do
+    # sum up all the time amounts to build file
+    cur_sum=$(echo "scale=6; $cur_sum + $num" | bc)
+  done
+  # get average of summed build times
+  cur_average=$(echo "scale=6; $cur_sum / $cur_len" | bc)
+  # append array witb source and pull command's sums respectively
+  _sumRuns+=("$cur_sum")
+  # append array with source and pull command's averages respectively
+  _averageRunTimes+=("$cur_average")
 }
 
 # Calculate individual run time stats. Declare arrays to be used.
@@ -380,21 +382,21 @@ _allFastOrSlow=$(echo "$_pullSumRuns - $_sourceSumRuns" | bc)
 _avgFastOrSlow=$(echo "$_pullAvgRuns - $_sourceAvgRuns" | bc)
 
 # Function to make repeating text.
-repetitive_diff() {
-	# template text
-	_thanSource="than source to build $1"
-	# calculation displayed
-	_theCurrentTimeDifference="$2"
-	# used to run condition to check if calculation is less or more time
-	_forCondition="$(echo "$_theCurrentTimeDifference >= 0" | bc -l)"
-	if [ "$_forCondition" = 1 ]; then
-		# pull command is slower
-		_fastOrSlow="pull was <strong>$_theCurrentTimeDifference seconds</strong> slower $_thanSource."
-	else
-		# source command is slower
-		_negateTime=$(echo "$_theCurrentTimeDifference * -1" | bc) # make positive number
-		_fastOrSlow="pull was <strong>$_negateTime</strong> faster $_thanSource."
-	fi	
+function repetitive_diff() {
+  # template text
+  _thanSource="than source to build $1"
+  # calculation displayed
+  _theCurrentTimeDifference="$2"
+  # used to run condition to check if calculation is less or more time
+  _forCondition="$(echo "$_theCurrentTimeDifference >= 0" | bc -l)"
+  if [ "$_forCondition" = 1 ]; then
+    # pull command is slower
+    _fastOrSlow="pull was <strong>$_theCurrentTimeDifference seconds</strong> slower $_thanSource."
+  else
+    # source command is slower
+    _negateTime=$(echo "$_theCurrentTimeDifference * -1" | bc) # make positive number
+    _fastOrSlow="pull was <strong>$_negateTime</strong> faster $_thanSource."
+  fi	
 }
 
 
@@ -422,49 +424,49 @@ sed -i "s|_fastOrSlowTwo|$_fastOrSlow|" support/run-times.txt # average of all b
 # Make drop items and menu text by commands used.
 touch support/options-ran.txt
 for opts in "${_optionsToRun[@]}"; do
-	if [ "$opts" = "" ]; then
-		echo "default" >> support/options-ran.txt
-	else
-		echo "$opts" >> support/options-ran.txt
-	fi
+  if [ "$opts" = "" ]; then
+    echo "default" >> support/options-ran.txt
+  else
+    echo "$opts" >> support/options-ran.txt
+  fi
 done
 echo "${_COMMAND_TEST^}" > support/COMMAND-USED.txt
 
 # Change README.md to show test results.
 cp README.md INSTRUCTIONS.md 2>/dev/null
 if [ $_currentTest = "quick-test" ]; then
-	cp templates/quick-README.md README.md 2>/dev/null
-	# Make list of files tested.
-	touch .temp-filesTested.txt
-	# list of files to update
-	list_files_tested=("list-gen.txt" "list-unq.txt")
+  cp templates/quick-README.md README.md 2>/dev/null
+  # Make list of files tested.
+  touch .temp-filesTested.txt
+  # list of files to update
+  list_files_tested=("list-gen.txt" "list-unq.txt")
 
-	# loop through the files tested
-	for files in "${list_files_tested[@]}"; do
-		cat $files >> .temp-filesTested.txt
-	done
-	sed -i 's/^/   - /' .temp-filesTested.txt
+  # loop through the files tested
+  for files in "${list_files_tested[@]}"; do
+    cat $files >> .temp-filesTested.txt
+  done
+  sed -i 's/^/   - /' .temp-filesTested.txt
 else
-	cp templates/full-README.md README.md 2>/dev/null
-	# Make list of files tested.
-	touch .temp-filesTested.txt
-	echo "### File Extensions:" >> .temp-filesTested.txt
-	# loop through the files tested
-	for ext in "${_fileExtensions[@]}"; do
-		echo "   - $ext" >> .temp-filesTested.txt
-	done
-	# add extra line
-	echo >> .temp-filesTested.txt
-	# headerfor repos
-	echo "### GitHub Repositories Tested:" >> .temp-filesTested.txt
-	
-	while (( index < ${#_fullTestRepos[@]} -1 )); do
-		_user=${_fullTestRepos[index]}
-		_repo=${_fullTestRepos[index + 1]}
-		echo "   - $_user/$_repo".git >> .temp-filesTested.txt
-		index=$((index + 2))
-	done
-	echo >> .temp-filesTested.txt
+  cp templates/full-README.md README.md 2>/dev/null
+  # Make list of files tested.
+  touch .temp-filesTested.txt
+  echo "### File Extensions:" >> .temp-filesTested.txt
+  # loop through the files tested
+  for ext in "${_fileExtensions[@]}"; do
+    echo "   - $ext" >> .temp-filesTested.txt
+  done
+  # add extra line
+  echo >> .temp-filesTested.txt
+  # headerfor repos
+  echo "### GitHub Repositories Tested:" >> .temp-filesTested.txt
+
+  while (( index < ${#_fullTestRepos[@]} -1 )); do
+    _user=${_fullTestRepos[index]}
+    _repo=${_fullTestRepos[index + 1]}
+    echo "   - $_user/$_repo".git >> .temp-filesTested.txt
+    index=$((index + 2))
+  done
+  echo >> .temp-filesTested.txt
 fi
 
 # Change link in README.md
@@ -486,7 +488,7 @@ rm list-gen.txt list-unq.txt .temp-filesTested.txt
 
 # Remove command as no longer needed.
 if [ ! -e .localCommandUsed ] || [ $_toTestRoot = 1 ]; then
-	rm -rf commands "$_COMMAND_TEST"
+  rm -rf commands "$_COMMAND_TEST"
 fi
 
 # Change comments in this file so markers reflect configuration.

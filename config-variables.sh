@@ -12,12 +12,12 @@ source config/checkFileSizes.sh
 # IMPORTANT - in order to use this tool you must agree to "USAGE_AGGREEMENT.md".  #                                                                                       
 #           - Changing the below variable to 1 confirms you acknowledge and agree #                                                                                         
 #             and meet criteria(s) specified in "USAGE_AGREEMENT.md".             #                                                                            
-                                                                                  #       
+#                                                                                 #       
 # Acknowledgment and Agreement to "USAGE_AGREEMENT.md"                            #                                                             
 # ---------------------------------------------------                             #                                                            
 #                                                                                 #        
 # Set to 1 to agree; 0 to disagree.                                               #
-###################################################################################                                          
+###################################################################################
 _acknowledgeAndAgreeToUSAGE_AGREEMENT=0
 
 # REQUIRED CONFIG INSTRUCTIONS: #########################################################
@@ -59,7 +59,7 @@ _toTestRoot=1                 # to test root - copies the command to test root f
 _exec="bin/$_COMMAND_TEST"    # exec       - path to executable for test.                                            #
                               #  IMPORTANT - only needs changing if "_toTestRoot" is 0                               #
                               #  IMPORTANT - if executable name is different, then remove variable and change name   #
-_useSource=1                  # use source - Start off using source user's command                                   #     
+_useSource=1                  # use source - Start off using source user's command. Foor time discrepencies.         # 
 _cloneRepo=1                  # clone repo - 1 to clone from github, 0 to use local                                  #      
                               #  IMPORTANT - if 0 then place files in directory                                      #   
 						      #             "commands/$_sourceUserName-$)COMMAND_TEST" &                             #           
@@ -119,32 +119,35 @@ function _commandSyntax() {
   # option      # file to change   # file that is changed
   _opt="$1" && _inputFile="$2" && _outputFile="$3"
   
-  if [ $_toTestRoot = 1 ]; then
-	# DO NOT CHANGE - variables (well remove "<" and ">" if needed).
-	# BUT REARRANGE - varibales per command syntax. This is configurred for roffit.
-	./$_COMMAND_TEST "$_opt" < "$_inputFile" > "$_outputFile"
-  else
-	# DO NOT CHANGE - variables - changed in data-test.
-	#    IMPORATANT - if needed make changes in "data-test".
-	# BUT REARRANGE - pending on how syntax of command is used.
-	# AND MAKE IF CHANGE - some uses require custom syntax per option. Below is configurred to asciidoctor.
-	if [ "$_opt" = "" ]; then
-		commands/"$_curGitHubUser"-"$_COMMAND_TEST"/"$_exec" "$_inputFile"
-		_moveHTML="${_inputFile%.*}$_targetFileExtension" && mv "$_moveHTML" "$_outputFile"
-	elif [ "$_opt" = "-D" ]; then
-		_moveHTML="${_outputFile%/*}" && _inputFileName="${_inputFile##*/}" && _outputFileName="${_inputFileName%.*}.html"
-		commands/"$_curGitHubUser"-"$_COMMAND_TEST"/"$_exec" "$_opt" "$_moveHTML" "$_inputFile"
-		_renameHTML="$_moveHTML/${_inputFileName%.*}$_targetFileExtension" && mv "$_renameHTML" "$_outputFile"
-	elif [ "$_opt" = "-o" ]; then
-		commands/"$_curGitHubUser"-"$_COMMAND_TEST"/"$_exec" "$_opt" "$_outputFile" "$_inputFile"
-	fi
-  fi
-
   # EXAMPLE: #######################################
   # command opts inputfile > output file           #        
   #                                                #            
   # Any additional lines. If needed edit data-test #
   ##################################################
+  # The below syntaxs are configurred for ROFFIT and ASCIIDOCTOR respectively.
+  if [ $_toTestRoot = 1 ]; then 
+    # EXAMPLE CONFIGURATION FOR ROFFIT
+    # DO NOT CHANGE - variables (well remove "<" and ">" if needed).
+    # BUT REARRANGE - varibales per command syntax. This is configurred for roffit.
+    ./$_COMMAND_TEST "$_opt" < "$_inputFile" > "$_outputFile"
+  else
+    # EXAMPLE CONFIGURATION FOR ASCIIDOCTOR
+    # DO NOT CHANGE - variables - changed in data-test.
+    #    IMPORATANT - if needed make changes in "data-test".
+    # BUT REARRANGE - pending on how syntax of command is used.
+    # AND MAKE IF CHANGE - some uses require custom syntax per option. Below is configurred to asciidoctor.
+    if [ "$_opt" = "" ]; then
+      commands/"$_curUser"-"$_COMMAND_TEST"/"$_exec" "$_inputFile"
+      _moveHTML="${_inputFile%.*}$_targetFileExtension" && mv "$_moveHTML" "$_outputFile"
+    elif [ "$_opt" = "-D" ]; then
+      _moveHTML="${_outputFile%/*}" && _inputFileName="${_inputFile##*/}" && _outputFileName="${_inputFileName%.*}.html"
+      commands/"$_curUser"-"$_COMMAND_TEST"/"$_exec" "$_opt" "$_moveHTML" "$_inputFile"
+      _renameHTML="$_moveHTML/${_inputFileName%.*}$_targetFileExtension" && mv "$_renameHTML" "$_outputFile"
+    elif [ "$_opt" = "-o" ]; then
+      commands/"$_curUser"-"$_COMMAND_TEST"/"$_exec" "$_opt" "$_outputFile" "$_inputFile"
+    fi
+  fi
+
 }
 
 # END REQUIRED
@@ -156,14 +159,14 @@ function _commandSyntax() {
 # ==============
 
 # SECONDS - Max number of seconds each command has to run test.
-_max_run_time=300
+_max_run_time=600
 # MB - Max size the test can build with both commands.
 _max_test_size=20
 
 # MB - Max size that each cloned repo can extract
 _max_clone_extract=50
 # SECONDS - Max time that each cloned repo can extract
-_max_clone_time=600
+_max_clone_time=900
 
 
 # Syntax for how the "diff" command will be used.

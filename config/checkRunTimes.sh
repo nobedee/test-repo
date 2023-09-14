@@ -10,13 +10,13 @@ function check_extract_time() {
   # check per repo extraction
   if [ $_extract_time_started = 0 ]; then
     _start_extract_time="$(date +%s.%N)" # start time of extraction
-	_extract_time_started=1 # mark extraction has started
+    _extract_time_started=1 # mark extraction has started
   fi
   _current_extract_time="$(date +%s.%N)" # time of extraction
   _current_extract_seconds=$(echo "$_current_extract_time - $_start_extract_time >= $_max_clone_time" | bc -l) # check if max
   if [ $_current_extract_seconds = 1 ]; then
     _whatMax="extract time"
-	_closeOutExtract=1  # max time reached - close
+    _closeOutExtract=1  # max time reached - close
   else
     _closeOutExtract=0 # max not reached
   fi
