@@ -8,7 +8,7 @@ locally. Edit the "config-variables.sh" file to run test.
 <br>
 It is recommended that you at least have an intermediate knowledge of
 the following before using this repository to build your test:
- 1. bash scripting
+ 1. <ins>bash scripting</ins>
  2. Makefile
  3. Data conversion tool being tested
 
