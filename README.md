@@ -34,15 +34,15 @@ Since this patch focuses on reproducing the website locally, there are three are
        sandbox/scripts/newlib-cygwin-current.bat
        - lines 137 to 141
       ```
-      
-   - See the `[sandbox/README.md](sandbox/README.md)` for instructions on reproducing the local
+
+   - See the [sandbox/README.md](sandbox/README.md) for instructions on reproducing the local
    site in a Sandbox environment.
 
 2. The local site that was reproduced from running the tool, with two alterations:
    
    - the `httpd.conf` built was renamed to `SANDBOX-httpd.conf`.
    - the current `httpd.conf` has been modified to account for GitHub Codespace so results can be
-   seen running codespace in the browser. See `[cygwin-htdocs/README.md](cygwin-htdocs/README.md)`
+   seen running codespace in the browser. See [cygwin-htdocs/README.md](cygwin-htdocs/README.md)
    for running reporoduced local site in GitHub Codespaces.
 
 3. The focal point of the patch; the built `faq.html`.
