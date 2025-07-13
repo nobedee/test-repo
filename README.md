@@ -1,30 +1,55 @@
 # patch-newlib-cygwin-faq
 
-This is a support repo for newlib-cygwin patch "cygwin: 6.21 faq-programming.xml edits". 
-Included is the [doc build html](https://nobedee.github.io/test-repo/faq.html) file, and
-a modified [index](https://nobedee.github.io/test-repo/) to mimic changes as they would be
-if pushed to repo, then rendered to the website [cygwin.com](https://cygwin.com/index.html).
+This is a support repo for newlib-cygwin patch **cygwin: faq-resources.xml add 3.4 reproduce local site**. 
 
-The first link below is the current section
-[6.21 faq.html](https://cygwin.com/faq.html#faq.programming.building-cygwin)
-on the website. The next set of links navigate directly to the changes.
+Since this patch focuses on reproducing the website locally, there are three areas of interest:
 
-## [PATCH 1/5] cygwin: faq-programming-6.21 add 5 required packages
+1. The tool used (`sandbox`) to reproduce the site locally in a sandbox environment.
+   
+   - The tool utilizes:
+      - the example `httpd.conf` (`cygwin: faq-resources-3.4 example httpd.conf`), 
 
-[add 5 required packages](https://nobedee.github.io/test-repo/#:~:text=make%20sure%20you%20have%20the%20necessary%20build%20tools%20installed).
+      ```
+      EXAMPLE HTTPD.CONF:
+       sandbox/scripts/newlib-cygwin-current.bat
+       - lines 99 to 130
+      ```
 
-## [PATCH 2/5] cygwin: faq-programming-6.21 ready-made download commands
+      - instructions on reproducing newlib docs (`cygwin: faq-resources-3.4 reproduce site docs`), 
 
-[ready-made download commands](https://nobedee.github.io/test-repo/#:~:text=commands%20to%20download%20the%20required%20packages)
+      ```
+      INSTALL REQUIRED PACKAGES:
+       sandbox/scripts/newlib-cygwin.bat
+       - lines 81 to 88
+      
+      INSTALL NEWLIB-CYGWIN:
+       sandbox/scripts/newlib-cygwin-install.bat
+       - lines 11 to 43
+      ```
+      
+      - and the command for starting a local host(`cygwin: faq-resources-3.4 start local server`).
 
-## [PATCH 3/5] cygwin: faq-programming-6.21 para about process and time
+      ```
+      RUN LOCAL SITE:
+       sandbox/scripts/newlib-cygwin-current.bat
+       - lines 137 to 141
+      ```
+      
+   - See the `[sandbox/README.md](sandbox/README.md)` for instructions on reproducing the local
+   site in a Sandbox environment.
 
-[para about process and time](https://nobedee.github.io/test-repo/#:~:text=There%20are%20two%20processes)
+2. The local site that was reproduced from running the tool, with two alterations:
+   
+   - the `httpd.conf` built was renamed to `SANDBOX-httpd.conf`.
+   - the current `httpd.conf` has been modified to account for GitHub Codespace so results can be
+   seen running codespace in the browser. See `[cygwin-htdocs/README.md](cygwin-htdocs/README.md)`
+   for running reporoduced local site in GitHub Codespaces.
 
-## [PATCH 4/5] cygwin: faq-programming-6.21 install tips
+3. The focal point of the patch; the built `faq.html`.
+   
+   - [doc build faq.html](https://jhauga.github.io/patch-newlib-cygwin-faq/faq.html) from newlib-cygwin build,
+   - [modified index.html file](https://jhauga.github.io/patch-newlib-cygwin-faq/) to mimic the faq.html
+   after version update.
 
-[install tips](https://nobedee.github.io/test-repo/#:~:text=Tip:%20ensure%20Perl's%20XML)
-
-## [PATCH 5/5] cygwin: faq-programming-6.21 unmatched parenthesis
-
-[unmatched parenthesis](https://nobedee.github.io/test-repo/#:~:text=check%20out%20the%20Cygwin%20sources%20from%20the%20Cygwin%20GIT%20source%20repository)
+Additionally, since running the site locally hinges on correctly configuring the `httpd.conf`
+file; a copy of the `httpd.conf` built from the `sandbox` tool is included in the root of the repo.
