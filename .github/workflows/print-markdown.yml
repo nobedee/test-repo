@@ -1,0 +1,47 @@
+name: Render & Print Markdown
+
+on:
+  workflow_dispatch:
+    inputs:
+      md_path:
+        description: 'Path to markdown file to render (relative to repo root)'
+        required: true
+        default: 'README.md'
+      printer:
+        description: 'Optional printer name (overrides default on print server)'
+        required: false
+
+jobs:
+  render-and-print:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm ci || npm i
+        working-directory: .
+
+      - name: Render Markdown → PDF and optionally send to print server
+        env:
+          MD_PATH: ${{ github.event.inputs.md_path }}
+          PRINT_SERVER_URL: ${{ secrets.PRINT_SERVER_URL }}        # optional
+          PRINT_SERVER_TOKEN: ${{ secrets.PRINT_SERVER_TOKEN }}    # optional auth token
+          PRINTER_NAME: ${{ github.event.inputs.printer }}         # optional override
+        run: |
+          node ./scripts/render-and-send.js
+
+      - name: Upload PDF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-pdf
+          path: ./out/rendered.pdf
