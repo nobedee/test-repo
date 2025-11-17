@@ -1,4 +1,4 @@
-name: Render & Print Markdown
+name: Render & Print Markdown (diagnostic)
 
 on:
   workflow_dispatch:
@@ -20,28 +20,38 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install dependencies
+      - name: Install dependencies (ci)
         run: |
-          npm ci || npm i
+          npm ci
         working-directory: .
+      
+      - name: Show environment & node info (debug)
+        run: |
+          echo "NODE: $(node --version)"
+          echo "NPM: $(npm --version)"
+          node -e "console.log(JSON.stringify(process.versions,null,2))"
+          ls -la
+          df -h
+        shell: bash
 
-      - name: Render Markdown → PDF and optionally send to print server
+      - name: Run renderer with diagnostics
         env:
           MD_PATH: ${{ github.event.inputs.md_path }}
-          PRINT_SERVER_URL: ${{ secrets.PRINT_SERVER_URL }}        # optional
-          PRINT_SERVER_TOKEN: ${{ secrets.PRINT_SERVER_TOKEN }}    # optional auth token
-          PRINTER_NAME: ${{ github.event.inputs.printer }}         # optional override
+          PRINT_SERVER_URL: ${{ secrets.PRINT_SERVER_URL }}
+          PRINT_SERVER_TOKEN: ${{ secrets.PRINT_SERVER_TOKEN }}
+          PRINTER_NAME: ${{ github.event.inputs.printer }}
         run: |
-          node ./scripts/render-and-send.js
+          node ./scripts/render-and-send-diagnostic.js
+        working-directory: .
+        continue-on-error: true
 
-      - name: Upload PDF artifact
-        if: always()
+      - name: Upload debug artifacts (always)
         uses: actions/upload-artifact@v4
         with:
-          name: rendered-pdf
-          path: ./out/rendered.pdf
+          name: rendered-output
+          path: out/
