@@ -1,57 +1,48 @@
-name: Render & Print Markdown (diagnostic)
+name: Render & Print Markdown PDF
 
 on:
   workflow_dispatch:
     inputs:
-      md_path:
-        description: 'Path to markdown file to render (relative to repo root)'
+      md_file:
+        description: 'Path to Markdown file to render'
         required: true
         default: 'README.md'
-      printer:
-        description: 'Optional printer name (overrides default on print server)'
-        required: false
 
 jobs:
-  render-and-print:
+  render-md:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
+      # 1️⃣ Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies (ci)
+      # 2️⃣ Create temporary Node environment and install dependencies
+      - name: Setup temporary Node environment
         run: |
-          npm ci
-        working-directory: .
-      
-      - name: Show environment & node info (debug)
-        run: |
-          echo "NODE: $(node --version)"
-          echo "NPM: $(npm --version)"
-          node -e "console.log(JSON.stringify(process.versions,null,2))"
-          ls -la
-          df -h
-        shell: bash
+          mkdir -p .tmp
+          cd .tmp
+          echo '{
+            "name": "md-printer-temp",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "puppeteer": "^23.0.0",
+              "marked": "^9.0.0"
+            }
+          }' > package.json
+          npm install
 
-      - name: Run renderer with diagnostics
+      # 3️⃣ Render Markdown to PDF using Puppeteer
+      - name: Render Markdown to PDF
+        run: |
+          cd .tmp
+          node ../scripts/render-md.js
         env:
-          MD_PATH: ${{ github.event.inputs.md_path }}
-          PRINT_SERVER_URL: ${{ secrets.PRINT_SERVER_URL }}
-          PRINT_SERVER_TOKEN: ${{ secrets.PRINT_SERVER_TOKEN }}
-          PRINTER_NAME: ${{ github.event.inputs.printer }}
-        run: |
-          node ./scripts/render-and-send-diagnostic.js
-        working-directory: .
-        continue-on-error: true
+          MD_PATH: ${{ github.event.inputs.md_file }}
 
-      - name: Upload debug artifacts (always)
+      # 4️⃣ Upload generated PDF as an artifact
+      - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rendered-output
-          path: out/
+          name: markdown-pdf
+          path: .tmp/out/rendered.pdf
