@@ -36,7 +36,7 @@
 6. [Issues in Designing Gson](#TOC-Issues-in-Designing-Gson)
 7. [Future Enhancements to Gson](#TOC-Future-Enhancements-to-Gson)
 
-<div id="TOC-Overview"><h2>Overview</h2></div>
+<h2 id="TOC-Overview">Overview</h2>
 
 Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object.
 
